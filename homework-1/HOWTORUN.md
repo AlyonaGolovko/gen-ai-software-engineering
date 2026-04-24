@@ -104,7 +104,7 @@ curl -X POST http://localhost:3000/transactions \
   -d '{"fromAccount":"ACC-12345"}'
 ```
 
-**Expected:** 400 status. `{"error":"Missing required fields: fromAccount, toAccount, amount, currency, type"}`
+**Expected:** 400 status. `{"errors":["Missing required fields: fromAccount, toAccount, amount, currency, type"]}`
 
 ### 8. Error: invalid amount (POST)
 
@@ -116,9 +116,57 @@ curl -X POST http://localhost:3000/transactions \
   -d '{"fromAccount":"ACC-12345","toAccount":"ACC-67890","amount":-10,"currency":"USD","type":"transfer"}'
 ```
 
-**Expected:** 400 status. `{"error":"amount must be a positive number"}`
+**Expected:** 400 status. `{"errors":["amount must be a positive number"]}`
 
-### 9. Error: transaction not found (GET)
+### 9. Error: too many decimal places (POST)
+
+**What:** Try to create a transaction with 3 decimal places.
+
+```bash
+curl -X POST http://localhost:3000/transactions \
+  -H "Content-Type: application/json" \
+  -d '{"fromAccount":"ACC-12345","toAccount":"ACC-67890","amount":100.123,"currency":"USD","type":"transfer"}'
+```
+
+**Expected:** 400 status. `{"errors":["amount must have at most 2 decimal places"]}`
+
+### 10. Error: invalid fromAccount format (POST)
+
+**What:** Try to create a transaction with an invalid fromAccount.
+
+```bash
+curl -X POST http://localhost:3000/transactions \
+  -H "Content-Type: application/json" \
+  -d '{"fromAccount":"INVALID","toAccount":"ACC-67890","amount":100.50,"currency":"USD","type":"transfer"}'
+```
+
+**Expected:** 400 status. `{"errors":["fromAccount must follow format ACC-XXXXX (X is alphanumeric)"]}`
+
+### 11. Error: both accounts invalid (POST)
+
+**What:** Both accounts have wrong format. Multiple errors returned at once.
+
+```bash
+curl -X POST http://localhost:3000/transactions \
+  -H "Content-Type: application/json" \
+  -d '{"fromAccount":"123","toAccount":"456","amount":100.50,"currency":"USD","type":"transfer"}'
+```
+
+**Expected:** 400 status. `{"errors":["fromAccount must follow format ACC-XXXXX (X is alphanumeric)","toAccount must follow format ACC-XXXXX (X is alphanumeric)"]}`
+
+### 12. Error: invalid currency (POST)
+
+**What:** Try to create a transaction with a fake currency code.
+
+```bash
+curl -X POST http://localhost:3000/transactions \
+  -H "Content-Type: application/json" \
+  -d '{"fromAccount":"ACC-12345","toAccount":"ACC-67890","amount":100.50,"currency":"FAKE","type":"transfer"}'
+```
+
+**Expected:** 400 status. `{"errors":["currency must be a valid ISO 4217 code (e.g. USD, EUR, GBP)"]}`
+
+### 13. Error: transaction not found (GET)
 
 **What:** Try to get a transaction with a fake ID.
 

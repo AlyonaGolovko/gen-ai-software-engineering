@@ -8,6 +8,7 @@
     "dev": "node --watch src/index.js"
   },
   "dependencies": {
+    "currency-codes": "^2.2.0",
     "express": "^4.21.0",
     "uuid": "^10.0.0"
   }

@@ -1,18 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const Transaction = require('../models/transaction');
+const { validate } = require('../validators/transaction');
 
 // POST /transactions — create a new transaction
 router.post('/transactions', (req, res) => {
   const { fromAccount, toAccount, amount, currency, type } = req.body;
 
-  // Minimal validation: required fields + amount must be a positive number
-  if (!fromAccount || !toAccount || amount == null || !currency || !type) {
-    return res.status(400).json({ error: 'Missing required fields: fromAccount, toAccount, amount, currency, type' });
-  }
-
-  if (typeof amount !== 'number' || amount <= 0) {
-    return res.status(400).json({ error: 'amount must be a positive number' });
+  const errors = validate({ fromAccount, toAccount, amount, currency, type });
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
   }
 
   const transaction = Transaction.create({ fromAccount, toAccount, amount, currency, type });
