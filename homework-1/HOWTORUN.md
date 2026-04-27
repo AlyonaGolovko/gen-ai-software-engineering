@@ -312,6 +312,18 @@ curl http://localhost:3000/transactions/export -o transactions.csv
 
 **Expected:** A `transactions.csv` file is created in your current folder.
 
+<!-- Task 6: Rate Limiting -->
+
+### 24. Rate limiting — 429 Too Many Requests
+
+**What:** Send more than 100 requests in one minute to trigger the rate limit.
+
+```bash
+for i in $(seq 1 101); do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/transactions; done
+```
+
+**Expected:** The first 100 requests return `200`. The 101st returns `429`.
+
 ## Stop the server
 
 Press `Ctrl+C` in the terminal where the server is running.

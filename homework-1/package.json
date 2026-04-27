@@ -10,6 +10,7 @@
   "dependencies": {
     "currency-codes": "^2.2.0",
     "express": "^4.21.0",
+    "express-rate-limit": "^8.4.1",
     "uuid": "^10.0.0"
   }
 }
