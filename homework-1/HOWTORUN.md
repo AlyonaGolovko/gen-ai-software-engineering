@@ -1,23 +1,10 @@
-# How to Run the application
-
-## What this API does
-
-A REST API for banking transactions. You can create transactions between accounts, list them, look up a specific one, and check account balances. Data is stored in memory (no database) — it resets when the server stops.
-
-## Endpoints summary
-
-| # | Method | Endpoint | What it does |
-|---|--------|----------|-------------|
-| 1 | POST | `/transactions` | Create a new transaction |
-| 2 | GET | `/transactions` | List all transactions |
-| 3 | GET | `/transactions/:id` | Get a single transaction by ID |
-| 4 | GET | `/accounts/:accountId/balance` | Get the balance for an account |
+# How to Run the Application
 
 ## Prerequisites
 
 - Node.js 18 or higher
 
-## Setup and start
+## Setup and Start
 
 ```bash
 cd homework-1
@@ -25,14 +12,28 @@ npm install
 npm start
 ```
 
-The server runs on `http://localhost:3000`. Keep this terminal open and use a second terminal for the test commands below.
+The server runs on `http://localhost:3000`. Keep this terminal open and use a **second terminal** for the test commands below.
 
-## Test cases
+---
 
-### 1. Create a transfer (POST)
+## Endpoints
 
-**What:** Sends 100.50 USD from ACC-12345 to ACC-67890.
-**Request type:** POST with JSON body.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/transactions` | Create a new transaction |
+| GET | `/transactions` | List all transactions (with optional filters) |
+| GET | `/transactions/:id` | Get a single transaction by ID |
+| GET | `/transactions/export` | Export transactions as CSV |
+| GET | `/accounts/:accountId/balance` | Get the balance for an account |
+| GET | `/accounts/:accountId/summary` | Get account summary |
+
+---
+
+## Test Cases
+
+### Task 1: Core API
+
+#### 1.1 Create a transfer
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -42,9 +43,7 @@ curl -X POST http://localhost:3000/transactions \
 
 **Expected:** 201 status. Returns the transaction with auto-generated `id`, `timestamp`, and `status: "completed"`.
 
-### 2. Create a second transaction (POST)
-
-**What:** Sends 50.00 EUR from ACC-67890 to ACC-11111.
+#### 1.2 Create a second transaction
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -52,21 +51,19 @@ curl -X POST http://localhost:3000/transactions \
   -d '{"fromAccount":"ACC-67890","toAccount":"ACC-11111","amount":50.00,"currency":"EUR","type":"transfer"}'
 ```
 
-**Expected:** 201 status. A second transaction is created.
+**Expected:** 201 status.
 
-### 3. List all transactions (GET)
-
-**What:** Returns all transactions created so far.
+#### 1.3 List all transactions
 
 ```bash
 curl http://localhost:3000/transactions
 ```
 
-**Expected:** An array with 2 transactions (from tests 1 and 2).
+**Expected:** An array with 2 transactions.
 
-### 4. Get a transaction by ID (GET)
+#### 1.4 Get a transaction by ID
 
-**What:** Looks up a single transaction. Replace `<id>` with the `id` from test 1.
+Replace `<id>` with the `id` from test 1.1.
 
 ```bash
 curl http://localhost:3000/transactions/<id>
@@ -74,9 +71,9 @@ curl http://localhost:3000/transactions/<id>
 
 **Expected:** The single transaction object.
 
-### 5. Get balance for ACC-12345 (GET)
+#### 1.5 Get balance for ACC-12345
 
-**What:** ACC-12345 sent 100.50 in test 1 and received nothing.
+ACC-12345 sent 100.50 and received nothing.
 
 ```bash
 curl http://localhost:3000/accounts/ACC-12345/balance
@@ -84,9 +81,9 @@ curl http://localhost:3000/accounts/ACC-12345/balance
 
 **Expected:** `{"accountId":"ACC-12345","balance":-100.5}`
 
-### 6. Get balance for ACC-67890 (GET)
+#### 1.6 Get balance for ACC-67890
 
-**What:** ACC-67890 received 100.50 in test 1, then sent 50.00 in test 2.
+ACC-67890 received 100.50, then sent 50.00.
 
 ```bash
 curl http://localhost:3000/accounts/ACC-67890/balance
@@ -94,9 +91,19 @@ curl http://localhost:3000/accounts/ACC-67890/balance
 
 **Expected:** `{"accountId":"ACC-67890","balance":50.5}`
 
-### 7. Error: missing fields (POST)
+#### 1.7 Transaction not found
 
-**What:** Try to create a transaction with missing required fields.
+```bash
+curl http://localhost:3000/transactions/nonexistent
+```
+
+**Expected:** 404. `{"error":"Transaction not found"}`
+
+---
+
+### Task 2: Validation
+
+#### 2.1 Missing required fields
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -104,11 +111,9 @@ curl -X POST http://localhost:3000/transactions \
   -d '{"fromAccount":"ACC-12345"}'
 ```
 
-**Expected:** 400 status. `{"errors":["Missing required fields: fromAccount, toAccount, amount, currency, type"]}`
+**Expected:** 400. `{"errors":["Missing required fields: fromAccount, toAccount, amount, currency, type"]}`
 
-### 8. Error: invalid amount (POST)
-
-**What:** Try to create a transaction with a negative amount.
+#### 2.2 Negative amount
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -116,11 +121,9 @@ curl -X POST http://localhost:3000/transactions \
   -d '{"fromAccount":"ACC-12345","toAccount":"ACC-67890","amount":-10,"currency":"USD","type":"transfer"}'
 ```
 
-**Expected:** 400 status. `{"errors":["amount must be a positive number"]}`
+**Expected:** 400. `{"errors":["amount must be a positive number"]}`
 
-### 9. Error: too many decimal places (POST)
-
-**What:** Try to create a transaction with 3 decimal places.
+#### 2.3 Too many decimal places
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -128,11 +131,9 @@ curl -X POST http://localhost:3000/transactions \
   -d '{"fromAccount":"ACC-12345","toAccount":"ACC-67890","amount":100.123,"currency":"USD","type":"transfer"}'
 ```
 
-**Expected:** 400 status. `{"errors":["amount must have at most 2 decimal places"]}`
+**Expected:** 400. `{"errors":["amount must have at most 2 decimal places"]}`
 
-### 10. Error: invalid fromAccount format (POST)
-
-**What:** Try to create a transaction with an invalid fromAccount.
+#### 2.4 Invalid account format
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -140,11 +141,9 @@ curl -X POST http://localhost:3000/transactions \
   -d '{"fromAccount":"INVALID","toAccount":"ACC-67890","amount":100.50,"currency":"USD","type":"transfer"}'
 ```
 
-**Expected:** 400 status. `{"errors":["fromAccount must follow format ACC-XXXXX (X is alphanumeric)"]}`
+**Expected:** 400. `{"errors":["fromAccount must follow format ACC-XXXXX (X is alphanumeric)"]}`
 
-### 11. Error: both accounts invalid (POST)
-
-**What:** Both accounts have wrong format. Multiple errors returned at once.
+#### 2.5 Both accounts invalid (multiple errors)
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -152,11 +151,9 @@ curl -X POST http://localhost:3000/transactions \
   -d '{"fromAccount":"123","toAccount":"456","amount":100.50,"currency":"USD","type":"transfer"}'
 ```
 
-**Expected:** 400 status. `{"errors":["fromAccount must follow format ACC-XXXXX (X is alphanumeric)","toAccount must follow format ACC-XXXXX (X is alphanumeric)"]}`
+**Expected:** 400. `{"errors":["fromAccount must follow format ACC-XXXXX (X is alphanumeric)","toAccount must follow format ACC-XXXXX (X is alphanumeric)"]}`
 
-### 12. Error: invalid currency (POST)
-
-**What:** Try to create a transaction with a fake currency code.
+#### 2.6 Invalid currency
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -164,11 +161,15 @@ curl -X POST http://localhost:3000/transactions \
   -d '{"fromAccount":"ACC-12345","toAccount":"ACC-67890","amount":100.50,"currency":"FAKE","type":"transfer"}'
 ```
 
-**Expected:** 400 status. `{"errors":["currency must be a valid ISO 4217 code (e.g. USD, EUR, GBP)"]}`
+**Expected:** 400. `{"errors":["currency must be a valid ISO 4217 code (e.g. USD, EUR, GBP)"]}`
 
-### 13. Filter by accountId (GET)
+---
 
-**What:** First create two transactions with different accounts, then filter by one.
+### Task 3: Transaction History (Filters)
+
+#### 3.1 Filter by accountId
+
+First create a transaction with different accounts:
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -176,15 +177,17 @@ curl -X POST http://localhost:3000/transactions \
   -d '{"fromAccount":"ACC-11111","toAccount":"ACC-22222","amount":50.00,"currency":"EUR","type":"transfer"}'
 ```
 
+Then filter:
+
 ```bash
 curl "http://localhost:3000/transactions?accountId=ACC-12345"
 ```
 
-**Expected:** Only transactions where ACC-12345 is the sender or receiver. Does not include the ACC-11111/ACC-22222 transaction.
+**Expected:** Only transactions where ACC-12345 is the sender or receiver.
 
-### 14. Filter by type (GET)
+#### 3.2 Filter by type
 
-**What:** Create a deposit, then filter by type to see only transfers.
+Create a deposit:
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -192,57 +195,45 @@ curl -X POST http://localhost:3000/transactions \
   -d '{"fromAccount":"ACC-12345","toAccount":"ACC-67890","amount":25.00,"currency":"USD","type":"deposit"}'
 ```
 
+Then filter:
+
 ```bash
 curl "http://localhost:3000/transactions?type=transfer"
 ```
 
 **Expected:** Only transactions with `"type":"transfer"`. The deposit is excluded.
 
-### 15. Filter by date range (GET)
-
-**What:** Filter transactions created today only.
+#### 3.3 Filter by date range
 
 ```bash
-curl "http://localhost:3000/transactions?from=2026-04-24&to=2026-04-24"
+curl "http://localhost:3000/transactions?from=2026-04-27&to=2026-04-27"
 ```
 
-**Expected:** Only transactions with timestamps on 2026-04-24. Adjust the dates to match when you're testing.
+**Expected:** Only transactions created on 2026-04-27. Adjust dates to match when you're testing.
 
-### 16. Filter with only `from` (GET)
-
-**What:** Get all transactions from a date onwards.
+#### 3.4 Filter with only `from`
 
 ```bash
-curl "http://localhost:3000/transactions?from=2026-04-24"
+curl "http://localhost:3000/transactions?from=2026-04-27"
 ```
 
-**Expected:** All transactions on or after 2026-04-24.
+**Expected:** All transactions on or after 2026-04-27.
 
-### 17. Combine multiple filters (GET)
-
-**What:** Filter by accountId, type, and date range at the same time.
+#### 3.5 Combine multiple filters
 
 ```bash
-curl "http://localhost:3000/transactions?accountId=ACC-12345&type=transfer&from=2026-04-24&to=2026-04-24"
+curl "http://localhost:3000/transactions?accountId=ACC-12345&type=transfer&from=2026-04-27&to=2026-04-27"
 ```
 
-**Expected:** Only transfers involving ACC-12345 on 2026-04-24.
+**Expected:** Only transfers involving ACC-12345 on 2026-04-27.
 
-### 18. Error: transaction not found (GET)
+---
 
-**What:** Try to get a transaction with a fake ID.
+### Task 4: Account Summary
 
-```bash
-curl http://localhost:3000/transactions/nonexistent
-```
+#### 4.1 Create test data and check summary for ACC-12345
 
-**Expected:** 404 status. `{"error":"Transaction not found"}`
-
-<!-- Task 4: Transaction Summary -->
-
-### 19. Account summary — ACC-12345 (GET)
-
-**What:** Create 3 transactions, then check the summary for ACC-12345. ACC-12345 sends 100 twice and receives 50 once.
+ACC-12345 sends 100 twice, receives 50 once.
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -262,9 +253,9 @@ curl http://localhost:3000/accounts/ACC-12345/summary
 
 **Expected:** `{"accountId":"ACC-12345","totalDeposits":50,"totalWithdrawals":200,"transactionCount":3,"mostRecentTransaction":"2026-04-27T..."}`
 
-### 20. Account summary — ACC-67890 (GET)
+#### 4.2 Check summary for ACC-67890
 
-**What:** Check the other side. ACC-67890 receives 100 twice and sends 50 once.
+ACC-67890 receives 100 twice, sends 50 once.
 
 ```bash
 curl http://localhost:3000/accounts/ACC-67890/summary
@@ -272,11 +263,11 @@ curl http://localhost:3000/accounts/ACC-67890/summary
 
 **Expected:** `{"accountId":"ACC-67890","totalDeposits":200,"totalWithdrawals":50,"transactionCount":3,"mostRecentTransaction":"2026-04-27T..."}`
 
-<!-- Task 5: Export transactions as CSV format. -->
+---
 
-### 21. Export all transactions as CSV (GET)
+### Task 5: CSV Export
 
-**What:** Create a transaction, then export all transactions as CSV.
+#### 5.1 Export all transactions as CSV
 
 ```bash
 curl -X POST http://localhost:3000/transactions \
@@ -286,25 +277,21 @@ curl -X POST http://localhost:3000/transactions \
 curl http://localhost:3000/transactions/export
 ```
 
-**Expected:** CSV output in terminal:
+**Expected:**
 ```
 id,fromAccount,toAccount,amount,currency,type,status,timestamp
 <uuid>,ACC-12345,ACC-67890,100.5,USD,transfer,completed,2026-04-27T...
 ```
 
-### 22. Export filtered transactions as CSV (GET)
-
-**What:** Export only transactions involving a specific account.
+#### 5.2 Export filtered transactions
 
 ```bash
 curl "http://localhost:3000/transactions/export?accountId=ACC-12345"
 ```
 
-**Expected:** Same CSV format, but only rows where ACC-12345 is the sender or receiver.
+**Expected:** CSV with only rows where ACC-12345 is sender or receiver.
 
-### 23. Download CSV as a file (GET)
-
-**What:** Save the CSV to a file in the current directory using `-o`.
+#### 5.3 Download CSV as a file
 
 ```bash
 curl http://localhost:3000/transactions/export -o transactions.csv
@@ -312,11 +299,11 @@ curl http://localhost:3000/transactions/export -o transactions.csv
 
 **Expected:** A `transactions.csv` file is created in your current folder.
 
-<!-- Task 6: Rate Limiting -->
+---
 
-### 24. Rate limiting — 429 Too Many Requests
+### Task 6: Rate Limiting
 
-**What:** Send more than 100 requests in one minute to trigger the rate limit.
+#### 6.1 Trigger 429 Too Many Requests
 
 ```bash
 for i in $(seq 1 101); do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/transactions; done
@@ -324,6 +311,8 @@ for i in $(seq 1 101); do curl -s -o /dev/null -w "%{http_code}\n" http://localh
 
 **Expected:** The first 100 requests return `200`. The 101st returns `429`.
 
-## Stop the server
+---
+
+## Stop the Server
 
 Press `Ctrl+C` in the terminal where the server is running.
