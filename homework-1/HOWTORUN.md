@@ -238,6 +238,40 @@ curl http://localhost:3000/transactions/nonexistent
 
 **Expected:** 404 status. `{"error":"Transaction not found"}`
 
+<!-- Task 4: Transaction Summary -->
+
+### 19. Account summary — ACC-12345 (GET)
+
+**What:** Create 3 transactions, then check the summary for ACC-12345. ACC-12345 sends 100 twice and receives 50 once.
+
+```bash
+curl -X POST http://localhost:3000/transactions \
+  -H "Content-Type: application/json" \
+  -d '{"fromAccount":"ACC-12345","toAccount":"ACC-67890","amount":100,"currency":"USD","type":"transfer"}'
+
+curl -X POST http://localhost:3000/transactions \
+  -H "Content-Type: application/json" \
+  -d '{"fromAccount":"ACC-12345","toAccount":"ACC-67890","amount":100,"currency":"USD","type":"transfer"}'
+
+curl -X POST http://localhost:3000/transactions \
+  -H "Content-Type: application/json" \
+  -d '{"fromAccount":"ACC-67890","toAccount":"ACC-12345","amount":50,"currency":"USD","type":"transfer"}'
+
+curl http://localhost:3000/accounts/ACC-12345/summary
+```
+
+**Expected:** `{"accountId":"ACC-12345","totalDeposits":50,"totalWithdrawals":200,"transactionCount":3,"mostRecentTransaction":"2026-04-27T..."}`
+
+### 20. Account summary — ACC-67890 (GET)
+
+**What:** Check the other side. ACC-67890 receives 100 twice and sends 50 once.
+
+```bash
+curl http://localhost:3000/accounts/ACC-67890/summary
+```
+
+**Expected:** `{"accountId":"ACC-67890","totalDeposits":200,"totalWithdrawals":50,"transactionCount":3,"mostRecentTransaction":"2026-04-27T..."}`
+
 ## Stop the server
 
 Press `Ctrl+C` in the terminal where the server is running.

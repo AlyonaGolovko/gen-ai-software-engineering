@@ -38,4 +38,32 @@ function getBalance(accountId) {
   return Math.round(balance * 100) / 100;
 }
 
-module.exports = { create, findAll, findById, getBalance };
+function getSummary(accountId) {
+  let totalDeposits = 0;
+  let totalWithdrawals = 0;
+  let transactionCount = 0;
+  let mostRecentTransaction = null;
+  for (const t of transactions) {
+    if (t.toAccount === accountId || t.fromAccount === accountId) {
+      transactionCount++;
+      if (!mostRecentTransaction || t.timestamp > mostRecentTransaction) {
+        mostRecentTransaction = t.timestamp;
+      }
+    }
+    if (t.toAccount === accountId) {
+      totalDeposits += t.amount;
+    }
+    if (t.fromAccount === accountId) {
+      totalWithdrawals += t.amount;
+    }
+  }
+  return {
+    accountId,
+    totalDeposits: Math.round(totalDeposits * 100) / 100,
+    totalWithdrawals: Math.round(totalWithdrawals * 100) / 100,
+    transactionCount,
+    mostRecentTransaction,
+  };
+}
+
+module.exports = { create, findAll, findById, getBalance, getSummary };

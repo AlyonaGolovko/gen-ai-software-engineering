@@ -60,4 +60,10 @@ router.get('/accounts/:accountId/balance', (req, res) => {
   res.json({ accountId: req.params.accountId, balance });
 });
 
+// GET /accounts/:accountId/summary — get account summary
+router.get('/accounts/:accountId/summary', (req, res) => {
+  const summary = Transaction.getSummary(req.params.accountId);
+  res.json(summary);
+});
+
 module.exports = router;
