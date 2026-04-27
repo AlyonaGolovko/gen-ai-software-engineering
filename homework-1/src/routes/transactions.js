@@ -16,9 +16,33 @@ router.post('/transactions', (req, res) => {
   res.status(201).json(transaction);
 });
 
-// GET /transactions — list all transactions
+// GET /transactions — list all transactions (with optional filters)
 router.get('/transactions', (req, res) => {
-  res.json(Transaction.findAll());
+  let results = Transaction.findAll();
+
+  const { accountId, type, from, to } = req.query;
+
+  if (accountId) {
+    results = results.filter(
+      (t) => t.fromAccount === accountId || t.toAccount === accountId
+    );
+  }
+
+  if (type) {
+    results = results.filter((t) => t.type === type);
+  }
+
+  if (from) {
+    results = results.filter((t) => t.timestamp >= new Date(from).toISOString());
+  }
+
+  if (to) {
+    const toDate = new Date(to);
+    toDate.setDate(toDate.getDate() + 1);
+    results = results.filter((t) => t.timestamp < toDate.toISOString());
+  }
+
+  res.json(results);
 });
 
 // GET /transactions/:id — get a single transaction

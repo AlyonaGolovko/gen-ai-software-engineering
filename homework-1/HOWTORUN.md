@@ -166,7 +166,69 @@ curl -X POST http://localhost:3000/transactions \
 
 **Expected:** 400 status. `{"errors":["currency must be a valid ISO 4217 code (e.g. USD, EUR, GBP)"]}`
 
-### 13. Error: transaction not found (GET)
+### 13. Filter by accountId (GET)
+
+**What:** First create two transactions with different accounts, then filter by one.
+
+```bash
+curl -X POST http://localhost:3000/transactions \
+  -H "Content-Type: application/json" \
+  -d '{"fromAccount":"ACC-11111","toAccount":"ACC-22222","amount":50.00,"currency":"EUR","type":"transfer"}'
+```
+
+```bash
+curl "http://localhost:3000/transactions?accountId=ACC-12345"
+```
+
+**Expected:** Only transactions where ACC-12345 is the sender or receiver. Does not include the ACC-11111/ACC-22222 transaction.
+
+### 14. Filter by type (GET)
+
+**What:** Create a deposit, then filter by type to see only transfers.
+
+```bash
+curl -X POST http://localhost:3000/transactions \
+  -H "Content-Type: application/json" \
+  -d '{"fromAccount":"ACC-12345","toAccount":"ACC-67890","amount":25.00,"currency":"USD","type":"deposit"}'
+```
+
+```bash
+curl "http://localhost:3000/transactions?type=transfer"
+```
+
+**Expected:** Only transactions with `"type":"transfer"`. The deposit is excluded.
+
+### 15. Filter by date range (GET)
+
+**What:** Filter transactions created today only.
+
+```bash
+curl "http://localhost:3000/transactions?from=2026-04-24&to=2026-04-24"
+```
+
+**Expected:** Only transactions with timestamps on 2026-04-24. Adjust the dates to match when you're testing.
+
+### 16. Filter with only `from` (GET)
+
+**What:** Get all transactions from a date onwards.
+
+```bash
+curl "http://localhost:3000/transactions?from=2026-04-24"
+```
+
+**Expected:** All transactions on or after 2026-04-24.
+
+### 17. Combine multiple filters (GET)
+
+**What:** Filter by accountId, type, and date range at the same time.
+
+```bash
+curl "http://localhost:3000/transactions?accountId=ACC-12345&type=transfer&from=2026-04-24&to=2026-04-24"
+```
+
+**Expected:** Only transfers involving ACC-12345 on 2026-04-24.
+
+### 18. Error: transaction not found (GET)
 
 **What:** Try to get a transaction with a fake ID.
 
