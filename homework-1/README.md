@@ -70,6 +70,11 @@ homework-1/
 - **Project setup** — initialized the project with a `CLAUDE.md` file containing repository structure, coding conventions, and homework requirements so Claude has context for tasks
 - **Planning** — before each task, Claude prepared a plan divided into steps by logic (e.g. one validation rule per step, one filter per step) rather than by files, making it easier to review and test each change
 
+**Examples of correcting Claude:**
+
+- **Validation structure** — Claude's initial plan placed all validation logic inline in the route handler. After reviewing the plan, I asked Claude to extract it into a separate `validators/` module.
+- **Currency validation** — Claude initially hardcoded a list of currencies as a constant. After reverting the change and refining the prompt to specify using an npm package, Claude used the `currency-codes` library instead — a more robust and maintainable solution.
+
 All generated code was reviewed, tested manually with curl before moving on.
 
 ## How to Run
