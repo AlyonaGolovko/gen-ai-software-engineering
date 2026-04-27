@@ -16,11 +16,9 @@ router.post('/transactions', (req, res) => {
   res.status(201).json(transaction);
 });
 
-// GET /transactions — list all transactions (with optional filters)
-router.get('/transactions', (req, res) => {
+function filterTransactions(query) {
   let results = Transaction.findAll();
-
-  const { accountId, type, from, to } = req.query;
+  const { accountId, type, from, to } = query;
 
   if (accountId) {
     results = results.filter(
@@ -42,7 +40,27 @@ router.get('/transactions', (req, res) => {
     results = results.filter((t) => t.timestamp < toDate.toISOString());
   }
 
-  res.json(results);
+  return results;
+}
+
+// GET /transactions/export — export transactions as CSV
+router.get('/transactions/export', (req, res) => {
+  const results = filterTransactions(req.query);
+
+  const header = 'id,fromAccount,toAccount,amount,currency,type,status,timestamp';
+  const rows = results.map(
+    (t) => `${t.id},${t.fromAccount},${t.toAccount},${t.amount},${t.currency},${t.type},${t.status},${t.timestamp}`
+  );
+  const csv = [header, ...rows].join('\n');
+
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="transactions.csv"');
+  res.send(csv);
+});
+
+// GET /transactions — list all transactions (with optional filters)
+router.get('/transactions', (req, res) => {
+  res.json(filterTransactions(req.query));
 });
 
 // GET /transactions/:id — get a single transaction

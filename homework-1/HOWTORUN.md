@@ -272,6 +272,46 @@ curl http://localhost:3000/accounts/ACC-67890/summary
 
 **Expected:** `{"accountId":"ACC-67890","totalDeposits":200,"totalWithdrawals":50,"transactionCount":3,"mostRecentTransaction":"2026-04-27T..."}`
 
+<!-- Task 5: Export transactions as CSV format. -->
+
+### 21. Export all transactions as CSV (GET)
+
+**What:** Create a transaction, then export all transactions as CSV.
+
+```bash
+curl -X POST http://localhost:3000/transactions \
+  -H "Content-Type: application/json" \
+  -d '{"fromAccount":"ACC-12345","toAccount":"ACC-67890","amount":100.50,"currency":"USD","type":"transfer"}'
+
+curl http://localhost:3000/transactions/export
+```
+
+**Expected:** CSV output in terminal:
+```
+id,fromAccount,toAccount,amount,currency,type,status,timestamp
+<uuid>,ACC-12345,ACC-67890,100.5,USD,transfer,completed,2026-04-27T...
+```
+
+### 22. Export filtered transactions as CSV (GET)
+
+**What:** Export only transactions involving a specific account.
+
+```bash
+curl "http://localhost:3000/transactions/export?accountId=ACC-12345"
+```
+
+**Expected:** Same CSV format, but only rows where ACC-12345 is the sender or receiver.
+
+### 23. Download CSV as a file (GET)
+
+**What:** Save the CSV to a file in the current directory using `-o`.
+
+```bash
+curl http://localhost:3000/transactions/export -o transactions.csv
+```
+
+**Expected:** A `transactions.csv` file is created in your current folder.
+
 ## Stop the server
 
 Press `Ctrl+C` in the terminal where the server is running.
