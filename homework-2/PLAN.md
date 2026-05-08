@@ -26,13 +26,13 @@
 
 ### Step 1.2 — Define the canonical Ticket model and validation schema
 This is the single source of truth used by every endpoint, every parser, and every test.
-- [ ] Define enum constants in one module (e.g., `src/models/enums.js`):
+- [x] Define enum constants in one module (e.g., `src/models/enums.js`):
   - `CATEGORIES = ['account_access', 'technical_issue', 'billing_question', 'feature_request', 'bug_report', 'other']`
   - `PRIORITIES = ['urgent', 'high', 'medium', 'low']`
   - `STATUSES = ['new', 'in_progress', 'waiting_customer', 'resolved', 'closed']`
   - `SOURCES = ['web_form', 'email', 'api', 'chat', 'phone']`
   - `DEVICE_TYPES = ['desktop', 'mobile', 'tablet']`
-- [ ] Build a Joi schema (`src/models/ticketSchema.js`) with two variants:
+- [x] Build a Joi schema (`src/models/ticketSchema.js`) with two variants:
   - `createTicketSchema` — all client-supplied fields with required/optional rules:
     - `customer_id`: required string, non-empty.
     - `customer_email`: required, `Joi.string().email()`.
@@ -46,26 +46,26 @@ This is the single source of truth used by every endpoint, every parser, and eve
     - `tags`: optional array of strings, default `[]`.
     - `metadata`: optional object with `source` (in `SOURCES`), `browser` (string), `device_type` (in `DEVICE_TYPES`).
   - `updateTicketSchema` — same fields but **all optional**, plus `resolved_at` (date, nullable). Disallow updating `id`, `created_at`.
-- [ ] Export a helper `validate(payload, schema)` that returns `{ value, error }` with `abortEarly: false` so all errors surface at once.
+- [x] Export a helper `validate(payload, schema)` that returns `{ value, error }` with `abortEarly: false` so all errors surface at once.
 
 ### Step 1.3 — Implement the in-memory ticket repository
 Encapsulate all storage operations behind a tiny module so route handlers never touch the Map directly.
-- [ ] Create `src/repositories/ticketRepository.js` exporting a singleton with methods:
+- [x] Create `src/repositories/ticketRepository.js` exporting a singleton with methods:
   - `create(ticketData)` → assigns `id` (UUID v4), `created_at`, `updated_at` (ISO strings), persists, returns the ticket.
   - `findAll(filters = {})` → applies filters by `category`, `priority`, `status`, `customer_id`, `source` (from `metadata.source`); supports `limit`/`offset` for pagination.
   - `findById(id)` → returns ticket or `null`.
   - `update(id, patch)` → merges `patch`, updates `updated_at`; if status transitions to `'resolved'`, sets `resolved_at = now`; returns updated ticket or `null` if not found.
   - `delete(id)` → returns boolean.
   - `clear()` → wipes the store (used by tests).
-- [ ] Internal storage: `const store = new Map()` keyed by ticket `id`.
+- [x] Internal storage: `const store = new Map()` keyed by ticket `id`.
 
 ### Step 1.4 — Wire up the Express application skeleton
-- [ ] Create `src/app.js` exporting a configured Express app (no `listen` call here — keeps it test-friendly).
+- [x] Create `src/app.js` exporting a configured Express app (no `listen` call here — keeps it test-friendly).
   - Middleware order: `helmet()`, `cors()`, `morgan('dev')` (skip when `NODE_ENV === 'test'`), `express.json({ limit: '10mb' })`.
   - Mount routers: `app.use('/tickets', ticketsRouter)`.
   - 404 fallthrough handler returning `{ error: 'Not Found' }` with status 404.
   - Centralized error middleware (see Step 1.11).
-- [ ] Create `src/server.js` that imports `app`, reads `PORT` from env (default 3000), and calls `app.listen`.
+- [x] Create `src/server.js` that imports `app`, reads `PORT` from env (default 3000), and calls `app.listen`.
 
 ### Step 1.5 — Implement `POST /tickets` (create a single ticket)
 - [ ] Add route in `src/routes/tickets.js`.
