@@ -68,33 +68,33 @@ Encapsulate all storage operations behind a tiny module so route handlers never 
 - [x] Create `src/server.js` that imports `app`, reads `PORT` from env (default 3000), and calls `app.listen`.
 
 ### Step 1.5 — Implement `POST /tickets` (create a single ticket)
-- [ ] Add route in `src/routes/tickets.js`.
-- [ ] Validate `req.body` against `createTicketSchema`. On error → respond 400 with `{ error: 'Validation failed', details: error.details.map(d => d.message) }`.
-- [ ] Apply server-side defaults: `status = 'new'`, `priority = 'medium'` (if not provided **and** `auto_classify` is false), `tags = []`, `resolved_at = null`, `assigned_to = null`.
-- [ ] Read query flag `?auto_classify=true` (Task 2 hook): if set, call the classifier (Task 2) and merge results before persisting; manual `category`/`priority` in body wins over classifier output.
-- [ ] Call `repo.create(payload)`.
-- [ ] Respond `201 Created` with the full ticket as JSON; include `Location: /tickets/:id` header.
+- [x] Add route in `src/routes/tickets.js`.
+- [x] Validate `req.body` against `createTicketSchema`. On error → respond 400 with `{ error: 'Validation failed', details: error.details.map(d => d.message) }`.
+- [x] Apply server-side defaults: `status = 'new'`, `priority = 'medium'` (if not provided **and** `auto_classify` is false), `tags = []`, `resolved_at = null`, `assigned_to = null`.
+- [x] Read query flag `?auto_classify=true` (Task 2 hook): if set, call the classifier (Task 2) and merge results before persisting; manual `category`/`priority` in body wins over classifier output. *(flag is read and gates the priority default; classifier integration deferred to Step 2.8)*
+- [x] Call `repo.create(payload)`.
+- [x] Respond `201 Created` with the full ticket as JSON; include `Location: /tickets/:id` header.
 
 ### Step 1.6 — Implement `GET /tickets` (list with filtering and pagination)
-- [ ] Accept query params: `category`, `priority`, `status`, `customer_id`, `source`, `limit` (default 50, max 500), `offset` (default 0).
-- [ ] Validate enum query params using a small Joi query schema; reject unknown values with 400.
-- [ ] Call `repo.findAll(filters)`; sort newest-first by `created_at` for stable UX.
-- [ ] Respond `200` with `{ data: [...], total, limit, offset }`.
+- [x] Accept query params: `category`, `priority`, `status`, `customer_id`, `source`, `limit` (default 50, max 500), `offset` (default 0).
+- [x] Validate enum query params using a small Joi query schema; reject unknown values with 400.
+- [x] Call `repo.findAll(filters)`; sort newest-first by `created_at` for stable UX.
+- [x] Respond `200` with `{ data: [...], total, limit, offset }`.
 
 ### Step 1.7 — Implement `GET /tickets/:id`
-- [ ] Validate `id` is a UUID (Joi.string().uuid()); return 400 if not.
-- [ ] `repo.findById(id)` → 404 with `{ error: 'Ticket not found' }` if missing, else `200` with ticket.
+- [x] Validate `id` is a UUID (Joi.string().uuid()); return 400 if not.
+- [x] `repo.findById(id)` → 404 with `{ error: 'Ticket not found' }` if missing, else `200` with ticket.
 
 ### Step 1.8 — Implement `PUT /tickets/:id`
-- [ ] Validate `id` (UUID), reject 400 if invalid.
-- [ ] Validate body against `updateTicketSchema`. Empty body → 400 (`'No fields to update'`).
-- [ ] `repo.update(id, body)` → 404 if missing.
-- [ ] If status changes to `'resolved'`, repository sets `resolved_at`. If status changes from `'resolved'` to anything else, `resolved_at` is cleared to `null`.
-- [ ] Always bump `updated_at`.
-- [ ] Respond `200` with the updated ticket.
+- [x] Validate `id` (UUID), reject 400 if invalid.
+- [x] Validate body against `updateTicketSchema`. Empty body → 400 (`'No fields to update'`).
+- [x] `repo.update(id, body)` → 404 if missing.
+- [x] If status changes to `'resolved'`, repository sets `resolved_at`. If status changes from `'resolved'` to anything else, `resolved_at` is cleared to `null`.
+- [x] Always bump `updated_at`.
+- [x] Respond `200` with the updated ticket.
 
 ### Step 1.9 — Implement `DELETE /tickets/:id`
-- [ ] Validate `id`. `repo.delete(id)` → 204 (no content) on success, 404 if not found.
+- [x] Validate `id`. `repo.delete(id)` → 204 (no content) on success, 404 if not found.
 
 ### Step 1.10 — Implement file parsers (CSV, JSON, XML) as pure functions
 Each parser takes a raw `Buffer` (from multer) and returns a normalized **array of plain ticket objects** ready for validation. No HTTP concerns inside parsers.
