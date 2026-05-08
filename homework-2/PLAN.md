@@ -115,14 +115,14 @@ Each parser takes a raw `Buffer` (from multer) and returns a normalized **array 
   - Throw `ParseError('Malformed XML: ...')` on parse failures.
 
 ### Step 1.11 — Implement `POST /tickets/import` (bulk import)
-- [ ] Configure `multer` with `multer.memoryStorage()` and a 10 MB limit; field name `file`.
-- [ ] Detect format from `req.file.mimetype` and `req.file.originalname` extension (fallback). Map to one of `csv | json | xml` or 415 Unsupported Media Type.
-- [ ] Call the matching parser. If it throws `ParseError`, respond `400` with the error message.
-- [ ] Iterate parsed records and, for each, validate with `createTicketSchema`:
+- [x] Configure `multer` with `multer.memoryStorage()` and a 10 MB limit; field name `file`.
+- [x] Detect format from `req.file.mimetype` and `req.file.originalname` extension (fallback). Map to one of `csv | json | xml` or 415 Unsupported Media Type.
+- [x] Call the matching parser. If it throws `ParseError`, respond `400` with the error message.
+- [x] Iterate parsed records and, for each, validate with `createTicketSchema`:
   - On valid → `repo.create()`, push to `successful` list (return only `id`).
   - On invalid → push to `failed` list with `{ index, errors: [...], record }`.
   - Wrap iteration in try/catch so a single bad record never aborts the batch.
-- [ ] Respond `200` (or `207 Multi-Status` if you want to be strict) with:
+- [x] Respond `200` (or `207 Multi-Status` if you want to be strict) with:
   ```json
   {
     "total": 50,
@@ -132,7 +132,7 @@ Each parser takes a raw `Buffer` (from multer) and returns a normalized **array 
     "errors": [{ "index": 4, "errors": ["customer_email must be a valid email"] }]
   }
   ```
-- [ ] If **all** records fail → respond `400` with the same payload (signals total rejection to clients).
+- [x] If **all** records fail → respond `400` with the same payload (signals total rejection to clients).
 
 ### Step 1.12 — Centralized error handling and HTTP status code discipline
 - [ ] Create `src/errors/index.js` defining: `ValidationError` (400), `NotFoundError` (404), `ParseError` (400), `UnsupportedMediaTypeError` (415), `PayloadTooLargeError` (413).
