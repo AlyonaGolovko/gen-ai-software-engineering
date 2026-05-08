@@ -135,13 +135,13 @@ Each parser takes a raw `Buffer` (from multer) and returns a normalized **array 
 - [x] If **all** records fail → respond `400` with the same payload (signals total rejection to clients).
 
 ### Step 1.12 — Centralized error handling and HTTP status code discipline
-- [ ] Create `src/errors/index.js` defining: `ValidationError` (400), `NotFoundError` (404), `ParseError` (400), `UnsupportedMediaTypeError` (415), `PayloadTooLargeError` (413).
-- [ ] Express error middleware (last `app.use`):
+- [x] Create `src/errors/index.js` defining: `ValidationError` (400), `NotFoundError` (404), `ParseError` (400), `UnsupportedMediaTypeError` (415), `PayloadTooLargeError` (413).
+- [x] Express error middleware (last `app.use`):
   - If `err` has a known type, respond with its `statusCode` and `{ error: err.message, details: err.details ?? undefined }`.
   - Multer errors (`LIMIT_FILE_SIZE`) → 413.
   - `SyntaxError` from `express.json` → 400 (`'Malformed JSON body'`).
   - Unknown → 500 with generic message; log full stack server-side.
-- [ ] Confirm every route uses the right status code:
+- [x] Confirm every route uses the right status code:
   - `201` create, `200` read/update, `204` delete, `400` validation, `404` not found, `415` unsupported file type, `413` payload too large.
 
 ---

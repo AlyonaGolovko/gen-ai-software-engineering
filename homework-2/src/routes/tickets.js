@@ -17,7 +17,11 @@ const {
 const { parseCsv } = require('../parsers/csvParser');
 const { parseJson } = require('../parsers/jsonParser');
 const { parseXml } = require('../parsers/xmlParser');
-const { ParseError } = require('../errors');
+const {
+  ValidationError,
+  NotFoundError,
+  UnsupportedMediaTypeError,
+} = require('../errors');
 
 const router = express.Router();
 
@@ -26,17 +30,7 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 },
 });
 
-function uploadSingleFile(req, res, next) {
-  upload.single('file')(req, res, (err) => {
-    if (err) {
-      if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(413).json({ error: 'File exceeds 10 MB limit' });
-      }
-      return res.status(400).json({ error: err.message });
-    }
-    next();
-  });
-}
+const uploadSingleFile = upload.single('file');
 
 function detectFormat(file) {
   const mime = (file.mimetype || '').toLowerCase();
@@ -75,13 +69,17 @@ function isTruthyFlag(value) {
   return false;
 }
 
+function assertUuid(id) {
+  const { error } = idParamSchema.validate(id);
+  if (error) {
+    throw new ValidationError('Validation failed', ['"id" must be a valid UUID']);
+  }
+}
+
 router.get('/', (req, res) => {
   const { value, error } = validate(req.query, listQuerySchema);
   if (error) {
-    return res.status(400).json({
-      error: 'Validation failed',
-      details: error.details.map((d) => d.message),
-    });
+    throw new ValidationError('Validation failed', error.details.map((d) => d.message));
   }
 
   const { data, total } = repo.findAll(value);
@@ -94,41 +92,23 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-  const { error } = idParamSchema.validate(req.params.id);
-  if (error) {
-    return res.status(400).json({
-      error: 'Validation failed',
-      details: ['"id" must be a valid UUID'],
-    });
-  }
-
+  assertUuid(req.params.id);
   const ticket = repo.findById(req.params.id);
-  if (!ticket) {
-    return res.status(404).json({ error: 'Ticket not found' });
-  }
-
+  if (!ticket) throw new NotFoundError('Ticket not found');
   res.status(200).json(ticket);
 });
 
 router.post('/import', uploadSingleFile, async (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ error: 'Missing file field' });
+    throw new ValidationError('Missing file field');
   }
 
   const format = detectFormat(req.file);
   if (!format) {
-    return res.status(415).json({ error: 'Unsupported file type' });
+    throw new UnsupportedMediaTypeError();
   }
 
-  let records;
-  try {
-    records = await runParser(format, req.file.buffer);
-  } catch (err) {
-    if (err instanceof ParseError) {
-      return res.status(400).json({ error: err.message });
-    }
-    throw err;
-  }
+  const records = await runParser(format, req.file.buffer);
 
   const successfulIds = [];
   const errors = [];
@@ -166,24 +146,20 @@ router.post('/import', uploadSingleFile, async (req, res) => {
     errors,
   };
 
-  if (records.length > 0 && summary.successful === 0) {
-    return res.status(400).json(summary);
-  }
-  res.status(200).json(summary);
+  const status = records.length > 0 && summary.successful === 0 ? 400 : 200;
+  res.status(status).json(summary);
 });
 
 router.post('/', (req, res) => {
-  const autoClassify = isTruthyFlag(req.query.auto_classify) || isTruthyFlag(req.body?.auto_classify);
+  const autoClassify =
+    isTruthyFlag(req.query.auto_classify) || isTruthyFlag(req.body?.auto_classify);
 
   const body = { ...req.body };
   delete body.auto_classify;
 
   const { value, error } = validate(body, createTicketSchema);
   if (error) {
-    return res.status(400).json({
-      error: 'Validation failed',
-      details: error.details.map((d) => d.message),
-    });
+    throw new ValidationError('Validation failed', error.details.map((d) => d.message));
   }
 
   const payload = {
@@ -201,49 +177,26 @@ router.post('/', (req, res) => {
   // if (autoClassify) { ...run classifier, merge with manual-override precedence... }
 
   const ticket = repo.create(payload);
-
   res.status(201).location(`/tickets/${ticket.id}`).json(ticket);
 });
 
 router.put('/:id', (req, res) => {
-  const { error: idError } = idParamSchema.validate(req.params.id);
-  if (idError) {
-    return res.status(400).json({
-      error: 'Validation failed',
-      details: ['"id" must be a valid UUID'],
-    });
-  }
+  assertUuid(req.params.id);
 
   const { value, error } = validate(req.body ?? {}, updateTicketSchema);
   if (error) {
-    return res.status(400).json({
-      error: 'Validation failed',
-      details: error.details.map((d) => d.message),
-    });
+    throw new ValidationError('Validation failed', error.details.map((d) => d.message));
   }
 
   const updated = repo.update(req.params.id, value);
-  if (!updated) {
-    return res.status(404).json({ error: 'Ticket not found' });
-  }
-
+  if (!updated) throw new NotFoundError('Ticket not found');
   res.status(200).json(updated);
 });
 
 router.delete('/:id', (req, res) => {
-  const { error } = idParamSchema.validate(req.params.id);
-  if (error) {
-    return res.status(400).json({
-      error: 'Validation failed',
-      details: ['"id" must be a valid UUID'],
-    });
-  }
-
+  assertUuid(req.params.id);
   const removed = repo.delete(req.params.id);
-  if (!removed) {
-    return res.status(404).json({ error: 'Ticket not found' });
-  }
-
+  if (!removed) throw new NotFoundError('Ticket not found');
   res.status(204).send();
 });
 

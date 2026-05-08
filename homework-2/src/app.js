@@ -25,6 +25,9 @@ app.use((err, req, res, next) => {
   if (err && err.type === 'entity.parse.failed') {
     return res.status(400).json({ error: 'Malformed JSON body' });
   }
+  if (err && err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(413).json({ error: 'File exceeds 10 MB limit' });
+  }
   if (err && typeof err.statusCode === 'number') {
     return res.status(err.statusCode).json({
       error: err.message,
