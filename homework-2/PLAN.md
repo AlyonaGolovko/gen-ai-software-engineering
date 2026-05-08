@@ -98,16 +98,16 @@ Encapsulate all storage operations behind a tiny module so route handlers never 
 
 ### Step 1.10 — Implement file parsers (CSV, JSON, XML) as pure functions
 Each parser takes a raw `Buffer` (from multer) and returns a normalized **array of plain ticket objects** ready for validation. No HTTP concerns inside parsers.
-- [ ] **CSV** (`src/parsers/csvParser.js`):
+- [x] **CSV** (`src/parsers/csvParser.js`):
   - Use `csv-parse/sync` with `{ columns: true, skip_empty_lines: true, trim: true }`.
   - Expected columns include flat keys for nested metadata: `metadata.source`, `metadata.browser`, `metadata.device_type`, plus a `tags` column containing pipe-separated values (e.g., `"login|2fa"`).
   - Post-process: convert `metadata.*` columns into a nested `metadata` object; split `tags` by `|`; coerce empty strings to `null` for nullable fields.
   - Throw `ParseError('Malformed CSV: ...')` on syntax errors.
-- [ ] **JSON** (`src/parsers/jsonParser.js`):
+- [x] **JSON** (`src/parsers/jsonParser.js`):
   - `JSON.parse(buffer.toString('utf8'))`.
   - Accept either an array of tickets or a single object → wrap in array.
   - Throw `ParseError('Malformed JSON: ...')` on `SyntaxError`.
-- [ ] **XML** (`src/parsers/xmlParser.js`):
+- [x] **XML** (`src/parsers/xmlParser.js`):
   - Use `xml2js.parseStringPromise(buffer.toString('utf8'), { explicitArray: false, trim: true })`.
   - Expected shape: `<tickets><ticket>...</ticket><ticket>...</ticket></tickets>`.
   - Normalize: when only one `<ticket>` exists, `xml2js` yields an object — coerce to single-element array.
