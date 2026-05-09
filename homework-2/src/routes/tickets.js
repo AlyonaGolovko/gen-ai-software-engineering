@@ -22,6 +22,11 @@ const {
   NotFoundError,
   UnsupportedMediaTypeError,
 } = require('../errors');
+const { classifyCategory } = require('../classification/categoryClassifier');
+const { classifyPriority } = require('../classification/priorityClassifier');
+const { computeConfidence, aggregateConfidence } = require('../classification/confidence');
+const { buildReasoning } = require('../classification/reasoning');
+const classificationLog = require('../classification/classificationLog');
 
 const router = express.Router();
 
@@ -169,14 +174,53 @@ router.post('/', (req, res) => {
     ...value,
   };
 
-  if (!payload.priority && !autoClassify) {
+  let pendingLogEntry = null;
+
+  if (autoClassify) {
+    const categoryResult = classifyCategory({
+      subject: payload.subject,
+      description: payload.description,
+    });
+    const priorityResult = classifyPriority({
+      subject: payload.subject,
+      description: payload.description,
+    });
+    const catConf = computeConfidence(categoryResult.matchedKeywords);
+    const priConf = computeConfidence(priorityResult.matchedKeywords);
+    const confidence = Number(aggregateConfidence(catConf, priConf).toFixed(2));
+    const reasoning = buildReasoning(categoryResult, priorityResult);
+
+    const manualCategory = value.category !== undefined;
+    const manualPriority = value.priority !== undefined;
+    const isOverride = manualCategory || manualPriority;
+
+    if (!manualCategory) payload.category = categoryResult.category;
+    if (!manualPriority) payload.priority = priorityResult.priority;
+
+    payload.classification_confidence = isOverride ? null : confidence;
+    payload.classified_at = new Date().toISOString();
+
+    pendingLogEntry = {
+      category: categoryResult.category,
+      priority: priorityResult.priority,
+      confidence,
+      keywords: {
+        category: categoryResult.matchedKeywords,
+        priority: priorityResult.matchedKeywords,
+      },
+      reasoning,
+      source: isOverride ? 'manual_override' : 'auto_create',
+    };
+  } else if (!payload.priority) {
     payload.priority = 'medium';
   }
 
-  // Auto-classify hook wired in Step 2.8 — placeholder, no-op for now.
-  // if (autoClassify) { ...run classifier, merge with manual-override precedence... }
-
   const ticket = repo.create(payload);
+
+  if (pendingLogEntry) {
+    classificationLog.record({ ...pendingLogEntry, ticket_id: ticket.id });
+  }
+
   res.status(201).location(`/tickets/${ticket.id}`).json(ticket);
 });
 
@@ -188,9 +232,102 @@ router.put('/:id', (req, res) => {
     throw new ValidationError('Validation failed', error.details.map((d) => d.message));
   }
 
-  const updated = repo.update(req.params.id, value);
+  const existing = repo.findById(req.params.id);
+  if (!existing) throw new NotFoundError('Ticket not found');
+
+  const overridingCategory =
+    value.category !== undefined && value.category !== existing.category;
+  const overridingPriority =
+    value.priority !== undefined && value.priority !== existing.priority;
+  const isOverride = overridingCategory || overridingPriority;
+
+  const patch = { ...value };
+  if (isOverride) patch.classification_confidence = null;
+
+  const updated = repo.update(req.params.id, patch);
   if (!updated) throw new NotFoundError('Ticket not found');
+
+  if (isOverride) {
+    const parts = [];
+    if (overridingCategory) {
+      parts.push(`category '${existing.category ?? 'null'}' → '${updated.category}'`);
+    }
+    if (overridingPriority) {
+      parts.push(`priority '${existing.priority ?? 'null'}' → '${updated.priority}'`);
+    }
+    const prevConf = existing.classification_confidence ?? null;
+    const reasoning =
+      `Manual override on update: ${parts.join('; ')}. ` +
+      `Previous classification_confidence: ${prevConf === null ? 'null' : prevConf}.`;
+
+    classificationLog.record({
+      ticket_id: req.params.id,
+      category: updated.category,
+      priority: updated.priority,
+      confidence: null,
+      keywords: null,
+      reasoning,
+      source: 'manual_override',
+    });
+  }
+
   res.status(200).json(updated);
+});
+
+router.post('/:id/auto-classify', (req, res) => {
+  assertUuid(req.params.id);
+
+  const ticket = repo.findById(req.params.id);
+  if (!ticket) throw new NotFoundError('Ticket not found');
+
+  const categoryResult = classifyCategory({
+    subject: ticket.subject,
+    description: ticket.description,
+  });
+  const priorityResult = classifyPriority({
+    subject: ticket.subject,
+    description: ticket.description,
+  });
+
+  const categoryConfidence = computeConfidence(categoryResult.matchedKeywords);
+  const priorityConfidence = computeConfidence(priorityResult.matchedKeywords);
+  const confidence = Number(
+    aggregateConfidence(categoryConfidence, priorityConfidence).toFixed(2),
+  );
+
+  const reasoning = buildReasoning(categoryResult, priorityResult);
+  const classifiedAt = new Date().toISOString();
+
+  repo.update(req.params.id, {
+    category: categoryResult.category,
+    priority: priorityResult.priority,
+    classification_confidence: confidence,
+    classified_at: classifiedAt,
+  });
+
+  const matchedKeywords = {
+    category: categoryResult.matchedKeywords,
+    priority: priorityResult.matchedKeywords,
+  };
+
+  classificationLog.record({
+    ticket_id: req.params.id,
+    category: categoryResult.category,
+    priority: priorityResult.priority,
+    confidence,
+    keywords: matchedKeywords,
+    reasoning,
+    source: 'auto_classify_endpoint',
+  });
+
+  res.status(200).json({
+    ticket_id: req.params.id,
+    category: categoryResult.category,
+    priority: priorityResult.priority,
+    confidence,
+    reasoning,
+    matched_keywords: matchedKeywords,
+  });
 });
 
 router.delete('/:id', (req, res) => {

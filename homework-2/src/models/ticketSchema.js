@@ -13,6 +13,13 @@ const metadataSchema = Joi.object({
   device_type: Joi.string().valid(...DEVICE_TYPES),
 });
 
+// Server-managed: silently dropped from incoming payloads. Defined here so
+// the schema documents the field exists and is owned by the server (Step 2.10).
+const SERVER_MANAGED = {
+  classification_confidence: Joi.any().strip(),
+  classified_at: Joi.any().strip(),
+};
+
 const createTicketSchema = Joi.object({
   customer_id: Joi.string().min(1).required(),
   customer_email: Joi.string().email().required(),
@@ -25,6 +32,7 @@ const createTicketSchema = Joi.object({
   assigned_to: Joi.string().allow(null),
   tags: Joi.array().items(Joi.string()).default([]),
   metadata: metadataSchema,
+  ...SERVER_MANAGED,
 });
 
 const updateTicketSchema = Joi.object({
@@ -40,6 +48,7 @@ const updateTicketSchema = Joi.object({
   tags: Joi.array().items(Joi.string()),
   metadata: metadataSchema,
   resolved_at: Joi.date().iso().allow(null),
+  ...SERVER_MANAGED,
 })
   .min(1)
   .messages({ 'object.min': 'No fields to update' });

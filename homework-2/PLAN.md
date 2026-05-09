@@ -149,7 +149,7 @@ Each parser takes a raw `Buffer` (from multer) and returns a normalized **array 
 ## Task 2 — Auto-Classification
 
 ### Step 2.1 — Define keyword dictionaries for categories and priorities
-- [ ] Create `src/classification/keywords.js` with two maps:
+- [x] Create `src/classification/keywords.js` with two maps:
   - `CATEGORY_KEYWORDS`:
     - `account_access`: `['login', 'log in', 'password', 'reset password', '2fa', 'two-factor', 'locked out', 'sign in', 'authentication']`
     - `technical_issue`: `['error', 'crash', 'broken', 'not working', 'fails', 'exception', 'timeout']`
@@ -161,53 +161,53 @@ Each parser takes a raw `Buffer` (from multer) and returns a normalized **array 
     - `high`: `['important', 'blocking', 'asap', 'urgent for me']`
     - `low`: `['minor', 'cosmetic', 'suggestion', 'nice to have']`
     - `medium`: `[]` (default fallback)
-- [ ] Keep keyword matching **case-insensitive** and **whole-token aware** (use a regex like `\bkeyword\b` for single words; for multi-word phrases, check substring after lowercasing).
+- [x] Keep keyword matching **case-insensitive** and **whole-token aware** (use a regex like `\bkeyword\b` for single words; for multi-word phrases, check substring after lowercasing). *(Dictionaries only define keywords; case-insensitive / whole-token matching is implemented in the classifiers — Steps 2.2–2.3.)*
 
 ### Step 2.2 — Implement the category classifier
-- [ ] Create `src/classification/categoryClassifier.js` with a pure function `classifyCategory({ subject, description })`.
-- [ ] Concatenate `subject + ' ' + description`, lowercase the result.
-- [ ] For each category, compute a **score** = number of keyword hits (count occurrences, not booleans, so repeated mentions strengthen confidence).
-- [ ] Track which keywords matched per category (used for reasoning).
-- [ ] Choose the category with the highest score.
-- [ ] If the highest score is `0` → return `'other'`.
-- [ ] Return `{ category, score, matchedKeywords: [...], scoresByCategory: {...} }`.
+- [x] Create `src/classification/categoryClassifier.js` with a pure function `classifyCategory({ subject, description })`.
+- [x] Concatenate `subject + ' ' + description`, lowercase the result.
+- [x] For each category, compute a **score** = number of keyword hits (count occurrences, not booleans, so repeated mentions strengthen confidence).
+- [x] Track which keywords matched per category (used for reasoning).
+- [x] Choose the category with the highest score.
+- [x] If the highest score is `0` → return `'other'`.
+- [x] Return `{ category, score, matchedKeywords: [...], scoresByCategory: {...} }`.
 
 ### Step 2.3 — Implement the priority classifier
-- [ ] Create `src/classification/priorityClassifier.js` with a pure function `classifyPriority({ subject, description })`.
-- [ ] Same keyword-scoring approach as category.
-- [ ] Resolution order when multiple priorities match: `urgent > high > low > medium` (urgent wins ties to be safe).
-- [ ] Default → `'medium'` when no keywords match.
-- [ ] Return `{ priority, score, matchedKeywords: [...], scoresByPriority: {...} }`.
+- [x] Create `src/classification/priorityClassifier.js` with a pure function `classifyPriority({ subject, description })`.
+- [x] Same keyword-scoring approach as category.
+- [x] Resolution order when multiple priorities match: `urgent > high > low > medium` (urgent wins ties to be safe).
+- [x] Default → `'medium'` when no keywords match.
+- [x] Return `{ priority, score, matchedKeywords: [...], scoresByPriority: {...} }`.
 
 ### Step 2.4 — Compute a confidence score (0–1)
-- [ ] Create `src/classification/confidence.js`.
-- [ ] Heuristic: `confidence = min(1, hits / 3)` where `hits` is the number of distinct matched keywords for the chosen label.
+- [x] Create `src/classification/confidence.js`.
+- [x] Heuristic: `confidence = min(1, hits / 3)` where `hits` is the number of distinct matched keywords for the chosen label.
   - 0 hits → `0.0` (forces `'other'` / `'medium'`)
   - 1 hit → `~0.33`
   - 2 hits → `~0.66`
   - 3+ hits → `1.0`
-- [ ] Compute confidence independently for category and priority; the endpoint may return both or an aggregate (`(catConf + priConf) / 2`). Document whichever choice you make in the API reference.
+- [x] Compute confidence independently for category and priority; the endpoint may return both or an aggregate (`(catConf + priConf) / 2`). Document whichever choice you make in the API reference. *(Module exports both `computeConfidence(matchedKeywords)` and `aggregateConfidence(catConf, priConf)`. Decision on response shape — single aggregate vs. per-axis — is deferred to Step 2.7 and will be documented in `API_REFERENCE.md` per Task 4.)*
 
 ### Step 2.5 — Generate human-readable reasoning
-- [ ] Add a `buildReasoning(categoryResult, priorityResult)` function returning a string such as:
+- [x] Add a `buildReasoning(categoryResult, priorityResult)` function returning a string such as:
   > `"Category 'account_access' inferred from keywords: [login, password reset]. Priority 'urgent' inferred from keywords: [can't access, security]."`
-- [ ] When falling back to `'other'` / `'medium'`, the reasoning should explicitly state `"No category keywords matched; defaulted to 'other'."`.
+- [x] When falling back to `'other'` / `'medium'`, the reasoning should explicitly state `"No category keywords matched; defaulted to 'other'."`.
 
 ### Step 2.6 — Implement the classification log
-- [ ] Create `src/classification/classificationLog.js` exporting:
+- [x] Create `src/classification/classificationLog.js` exporting:
   - `record({ ticket_id, category, priority, confidence, keywords, reasoning, source })` where `source ∈ { 'auto_create', 'auto_classify_endpoint', 'manual_override' }`. Stamp `timestamp` automatically (ISO).
   - `getAll()` and `getByTicketId(ticket_id)` for inspection (used by tests).
   - Internal storage: in-memory array (capped at, e.g., 10k entries with FIFO eviction to prevent unbounded growth).
-- [ ] Every classification — auto or manual — must hit this log so audits remain complete.
+- [x] Every classification — auto or manual — must hit this log so audits remain complete. *(Module is built and verified; the actual call sites — Steps 2.7 / 2.8 / 2.9 — will wire it into the routes.)*
 
 ### Step 2.7 — Implement `POST /tickets/:id/auto-classify`
-- [ ] Validate `:id` (UUID); 400 if invalid.
-- [ ] Look up ticket; 404 if missing.
-- [ ] Run category + priority classifiers on `{ subject, description }`.
-- [ ] Compute confidence + reasoning.
-- [ ] Persist the result into the ticket via `repo.update(id, { category, priority, classification_confidence, classified_at: now })`.
-- [ ] Log via `classificationLog.record(... source: 'auto_classify_endpoint')`.
-- [ ] Respond `200` with:
+- [x] Validate `:id` (UUID); 400 if invalid.
+- [x] Look up ticket; 404 if missing.
+- [x] Run category + priority classifiers on `{ subject, description }`.
+- [x] Compute confidence + reasoning.
+- [x] Persist the result into the ticket via `repo.update(id, { category, priority, classification_confidence, classified_at: now })`.
+- [x] Log via `classificationLog.record(... source: 'auto_classify_endpoint')`.
+- [x] Respond `200` with:
   ```json
   {
     "ticket_id": "uuid",
@@ -223,22 +223,22 @@ Each parser takes a raw `Buffer` (from multer) and returns a normalized **array 
   ```
 
 ### Step 2.8 — Auto-classify on ticket creation (opt-in flag)
-- [ ] In `POST /tickets`, read `auto_classify` from query string OR body (boolean).
-- [ ] When `true`:
+- [x] In `POST /tickets`, read `auto_classify` from query string OR body (boolean).
+- [x] When `true`:
   - Run classifiers before persistence.
   - If the request body **also** specifies `category` or `priority`, treat the body values as **manual override** — keep the body values, but still log the auto result + the override decision (`source: 'manual_override'`).
   - Otherwise, write classifier results onto the new ticket along with `classification_confidence` and `classified_at`.
-- [ ] Log the decision either way.
+- [x] Log the decision either way.
 
 ### Step 2.9 — Manual override behavior on update
-- [ ] When `PUT /tickets/:id` updates `category` or `priority`, log a `manual_override` entry referencing the previous (auto-assigned, if any) value.
-- [ ] Set `classification_confidence` to `null` and `classified_at` unchanged for manually overridden fields — confidence is only meaningful when the system inferred the value.
+- [x] When `PUT /tickets/:id` updates `category` or `priority`, log a `manual_override` entry referencing the previous (auto-assigned, if any) value.
+- [x] Set `classification_confidence` to `null` and `classified_at` unchanged for manually overridden fields — confidence is only meaningful when the system inferred the value.
 
 ### Step 2.10 — Persist classification metadata on the Ticket model
-- [ ] Extend the ticket structure with two additional fields:
+- [x] Extend the ticket structure with two additional fields:
   - `classification_confidence`: number 0–1 or `null`.
   - `classified_at`: ISO datetime or `null`.
-- [ ] Update `createTicketSchema` and `updateTicketSchema` to allow these as **server-managed** fields (clients should not set them directly — strip from incoming payloads).
+- [x] Update `createTicketSchema` and `updateTicketSchema` to allow these as **server-managed** fields (clients should not set them directly — strip from incoming payloads).
 
 ---
 
