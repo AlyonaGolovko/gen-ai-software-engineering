@@ -81,6 +81,49 @@ function assertUuid(id) {
   }
 }
 
+// Runs both classifiers, computes aggregate confidence, and applies
+// per-axis manual-override precedence. Returns the patched payload to persist
+// and the log entry to record. Used by POST /tickets (single create) and
+// POST /tickets/import (per-row, when ?auto_classify=true).
+function buildAutoClassifyResult(validated) {
+  const categoryResult = classifyCategory({
+    subject: validated.subject,
+    description: validated.description,
+  });
+  const priorityResult = classifyPriority({
+    subject: validated.subject,
+    description: validated.description,
+  });
+  const catConf = computeConfidence(categoryResult.matchedKeywords);
+  const priConf = computeConfidence(priorityResult.matchedKeywords);
+  const confidence = Number(aggregateConfidence(catConf, priConf).toFixed(2));
+  const reasoning = buildReasoning(categoryResult, priorityResult);
+
+  const manualCategory = validated.category !== undefined;
+  const manualPriority = validated.priority !== undefined;
+  const isOverride = manualCategory || manualPriority;
+
+  const patch = {};
+  if (!manualCategory) patch.category = categoryResult.category;
+  if (!manualPriority) patch.priority = priorityResult.priority;
+  patch.classification_confidence = isOverride ? null : confidence;
+  patch.classified_at = new Date().toISOString();
+
+  const logEntry = {
+    category: categoryResult.category,
+    priority: priorityResult.priority,
+    confidence,
+    keywords: {
+      category: categoryResult.matchedKeywords,
+      priority: priorityResult.matchedKeywords,
+    },
+    reasoning,
+    source: isOverride ? 'manual_override' : 'auto_create',
+  };
+
+  return { patch, logEntry };
+}
+
 router.get('/', (req, res) => {
   const { value, error } = validate(req.query, listQuerySchema);
   if (error) {
@@ -113,6 +156,7 @@ router.post('/import', uploadSingleFile, async (req, res) => {
     throw new UnsupportedMediaTypeError();
   }
 
+  const autoClassify = isTruthyFlag(req.query.auto_classify);
   const records = await runParser(format, req.file.buffer);
 
   const successfulIds = [];
@@ -135,9 +179,22 @@ router.post('/import', uploadSingleFile, async (req, res) => {
         resolved_at: null,
         ...value,
       };
-      if (!payload.priority) payload.priority = 'medium';
+
+      let pendingLogEntry = null;
+      if (autoClassify) {
+        const { patch, logEntry } = buildAutoClassifyResult(value);
+        Object.assign(payload, patch);
+        pendingLogEntry = logEntry;
+      } else if (!payload.priority) {
+        payload.priority = 'medium';
+      }
+
       const ticket = repo.create(payload);
       successfulIds.push(ticket.id);
+
+      if (pendingLogEntry) {
+        classificationLog.record({ ...pendingLogEntry, ticket_id: ticket.id });
+      }
     } catch (err) {
       errors.push({ index, errors: [err.message], record });
     }
@@ -177,40 +234,9 @@ router.post('/', (req, res) => {
   let pendingLogEntry = null;
 
   if (autoClassify) {
-    const categoryResult = classifyCategory({
-      subject: payload.subject,
-      description: payload.description,
-    });
-    const priorityResult = classifyPriority({
-      subject: payload.subject,
-      description: payload.description,
-    });
-    const catConf = computeConfidence(categoryResult.matchedKeywords);
-    const priConf = computeConfidence(priorityResult.matchedKeywords);
-    const confidence = Number(aggregateConfidence(catConf, priConf).toFixed(2));
-    const reasoning = buildReasoning(categoryResult, priorityResult);
-
-    const manualCategory = value.category !== undefined;
-    const manualPriority = value.priority !== undefined;
-    const isOverride = manualCategory || manualPriority;
-
-    if (!manualCategory) payload.category = categoryResult.category;
-    if (!manualPriority) payload.priority = priorityResult.priority;
-
-    payload.classification_confidence = isOverride ? null : confidence;
-    payload.classified_at = new Date().toISOString();
-
-    pendingLogEntry = {
-      category: categoryResult.category,
-      priority: priorityResult.priority,
-      confidence,
-      keywords: {
-        category: categoryResult.matchedKeywords,
-        priority: priorityResult.matchedKeywords,
-      },
-      reasoning,
-      source: isOverride ? 'manual_override' : 'auto_create',
-    };
+    const { patch, logEntry } = buildAutoClassifyResult(value);
+    Object.assign(payload, patch);
+    pendingLogEntry = logEntry;
   } else if (!payload.priority) {
     payload.priority = 'medium';
   }
