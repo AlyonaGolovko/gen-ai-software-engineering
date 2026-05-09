@@ -245,34 +245,35 @@ Each parser takes a raw `Buffer` (from multer) and returns a normalized **array 
 ## Task 3 — AI-Generated Test Suite (>85% coverage)
 
 ### Step 3.1 — Configure Jest, Supertest, and coverage thresholds
-- [ ] Add `jest.config.js`:
+- [x] Add `jest.config.js`:
   ```js
   module.exports = {
     testEnvironment: 'node',
     testMatch: ['**/tests/**/*.test.js'],
-    collectCoverage: true,
     collectCoverageFrom: ['src/**/*.js', '!src/server.js'],
     coverageDirectory: 'coverage',
     coverageReporters: ['text', 'lcov', 'html'],
     coverageThreshold: {
       global: { branches: 85, functions: 85, lines: 85, statements: 85 }
     },
-    setupFilesAfterEach: ['<rootDir>/tests/setup.js']
+    setupFilesAfterEnv: ['<rootDir>/tests/setup.js']
   };
   ```
-- [ ] Create `tests/setup.js` that imports the repository and runs `repo.clear()` in a global `afterEach` so tests stay isolated.
-- [ ] Export the Express `app` (without `listen`) from `src/app.js` so Supertest can drive it without binding a port.
+  *(Note: real Jest key is `setupFilesAfterEnv`, not `setupFilesAfterEach` — original plan had a typo. Also dropped `collectCoverage: true` so `npm test` runs fast without coverage; coverage gate only fires under `--coverage` flag.)*
+- [x] Create `tests/setup.js` that imports the repository and runs `repo.clear()` in a global `afterEach` so tests stay isolated. *(Also clears `classificationLog` for the same reason — it's a shared singleton too.)*
+- [x] Export the Express `app` (without `listen`) from `src/app.js` so Supertest can drive it without binding a port. *(Already done in Step 1.4.)*
+- [x] **Side fix**: downgraded `uuid` from v14 (ESM-only) to v9 (CJS) so Jest can `require()` it without ESM transform config.
 
 ### Step 3.2 — Build the fixtures library
 Place under `tests/fixtures/`. These files double as the homework deliverable sample data.
-- [ ] `valid_tickets.csv` — 50 tickets covering all categories, priorities, statuses; include rows with quoted descriptions containing commas and pipes for tags.
-- [ ] `valid_tickets.json` — array of 20 tickets (same field coverage).
-- [ ] `valid_tickets.xml` — `<tickets>` root with 30 `<ticket>` children, including nested `<metadata>` and multi-`<tag>` arrays.
-- [ ] `invalid_tickets.csv` — 10 rows with one defect each (bad email, subject too long, missing description, invalid enum, etc.) — used to assert per-row error reporting.
-- [ ] `malformed.csv` — truncated/corrupt CSV (unterminated quote).
-- [ ] `malformed.json` — `{ "tickets": [` (syntax error).
-- [ ] `malformed.xml` — unclosed root tag.
-- [ ] `single_ticket.json` — a single object (not array) to test the wrap-to-array behavior.
+- [x] `valid_tickets.csv` — 50 tickets covering all categories, priorities, statuses; include rows with quoted descriptions containing commas and pipes for tags.
+- [x] `valid_tickets.json` — array of 20 tickets (same field coverage).
+- [x] `valid_tickets.xml` — `<tickets>` root with 30 `<ticket>` children, including nested `<metadata>` and multi-`<tag>` arrays.
+- [x] `invalid_tickets.csv` — 10 rows with one defect each (bad email, subject too long, missing description, invalid enum, etc.) — used to assert per-row error reporting.
+- [x] `malformed.csv` — truncated/corrupt CSV (unterminated quote).
+- [x] `malformed.json` — `{ "tickets": [` (syntax error).
+- [x] `malformed.xml` — unclosed root tag.
+- [x] `single_ticket.json` — a single object (not array) to test the wrap-to-array behavior.
 
 ### Step 3.3 — `tests/test_ticket_api.test.js` (11 tests)
 Use Supertest against the imported app.
