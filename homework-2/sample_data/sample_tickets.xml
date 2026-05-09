@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>cust3000</customer_id>
+    <customer_email>xmluser0@example.com</customer_email>
+    <customer_name>XML User 0</customer_name>
+    <subject>Cannot login to account</subject>
+    <description>Login fails repeatedly, password reset is broken, locked out completely.</description>
+    <category>account_access</category>
+    <priority>urgent</priority>
+    <status>new</status>
+    <tags>
+      <tag>login</tag>
+      <tag>2fa</tag>
+      <tag>password</tag>
+    </tags>
+    <metadata>
+      <source>web_form</source>
+      <browser>Safari</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3001</customer_id>
+    <customer_email>xmluser1@example.com</customer_email>
+    <customer_name>XML User 1</customer_name>
+    <subject>App crash on save</subject>
+    <description>Application crash, error thrown, save button broken and not working.</description>
+    <category>technical_issue</category>
+    <priority>high</priority>
+    <status>in_progress</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>email</source>
+      <browser>Safari</browser>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3002</customer_id>
+    <customer_email>xmluser2@example.com</customer_email>
+    <customer_name>XML User 2</customer_name>
+    <subject>Refund request</subject>
+    <description>Need refund for double charge on last invoice, billing error.</description>
+    <category>billing_question</category>
+    <priority>medium</priority>
+    <status>waiting_customer</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>api</source>
+      <browser>Safari</browser>
+      <device_type>tablet</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3003</customer_id>
+    <customer_email>xmluser3@example.com</customer_email>
+    <customer_name>XML User 3</customer_name>
+    <subject>Enhancement suggestion</subject>
+    <description>Suggestion: please add CSV export feature, would be great.</description>
+    <category>feature_request</category>
+    <priority>low</priority>
+    <status>resolved</status>
+    <tags>
+      <tag>login</tag>
+      <tag>2fa</tag>
+      <tag>password</tag>
+    </tags>
+    <metadata>
+      <source>chat</source>
+      <browser>Safari</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3004</customer_id>
+    <customer_email>xmluser4@example.com</customer_email>
+    <customer_name>XML User 4</customer_name>
+    <subject>Reproduction steps</subject>
+    <description>Steps to reproduce: 1) login 2) click export — bug, regression.</description>
+    <category>bug_report</category>
+    <priority>urgent</priority>
+    <status>closed</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>phone</source>
+      <browser>Safari</browser>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3005</customer_id>
+    <customer_email>xmluser5@example.com</customer_email>
+    <customer_name>XML User 5</customer_name>
+    <subject>Random question</subject>
+    <description>Wondering about something general, not really an issue.</description>
+    <category>other</category>
+    <priority>high</priority>
+    <status>new</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>web_form</source>
+      <browser>Safari</browser>
+      <device_type>tablet</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3006</customer_id>
+    <customer_email>xmluser6@example.com</customer_email>
+    <customer_name>XML User 6</customer_name>
+    <subject>Sign in issue</subject>
+    <description>Authentication keeps timing out, password reset link never arrives.</description>
+    <category>account_access</category>
+    <priority>medium</priority>
+    <status>in_progress</status>
+    <tags>
+      <tag>login</tag>
+      <tag>2fa</tag>
+      <tag>password</tag>
+    </tags>
+    <metadata>
+      <source>email</source>
+      <browser>Safari</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3007</customer_id>
+    <customer_email>xmluser7@example.com</customer_email>
+    <customer_name>XML User 7</customer_name>
+    <subject>Page not loading</subject>
+    <description>Page broken, nothing loads, error in console</description>
+    <category>technical_issue</category>
+    <priority>low</priority>
+    <status>waiting_customer</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>api</source>
+      <browser>Safari</browser>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3008</customer_id>
+    <customer_email>xmluser8@example.com</customer_email>
+    <customer_name>XML User 8</customer_name>
+    <subject>Invoice missing</subject>
+    <description>Last month invoice never arrived, payment processed though.</description>
+    <category>billing_question</category>
+    <priority>urgent</priority>
+    <status>resolved</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>chat</source>
+      <browser>Safari</browser>
+      <device_type>tablet</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3009</customer_id>
+    <customer_email>xmluser9@example.com</customer_email>
+    <customer_name>XML User 9</customer_name>
+    <subject>Please add dark mode</subject>
+    <description>Would be nice to have dark mode, this is a feature request.</description>
+    <category>feature_request</category>
+    <priority>high</priority>
+    <status>closed</status>
+    <tags>
+      <tag>login</tag>
+      <tag>2fa</tag>
+      <tag>password</tag>
+    </tags>
+    <metadata>
+      <source>phone</source>
+      <browser>Safari</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3010</customer_id>
+    <customer_email>xmluser10@example.com</customer_email>
+    <customer_name>XML User 10</customer_name>
+    <subject>Bug in export</subject>
+    <description>Bug found, regression from last release, defect in CSV export.</description>
+    <category>bug_report</category>
+    <priority>medium</priority>
+    <status>new</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>web_form</source>
+      <browser>Safari</browser>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3011</customer_id>
+    <customer_email>xmluser11@example.com</customer_email>
+    <customer_name>XML User 11</customer_name>
+    <subject>Saying hi</subject>
+    <description>Just wanted to say hello, nothing specific to report today.</description>
+    <category>other</category>
+    <priority>low</priority>
+    <status>in_progress</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>email</source>
+      <browser>Safari</browser>
+      <device_type>tablet</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3012</customer_id>
+    <customer_email>xmluser12@example.com</customer_email>
+    <customer_name>XML User 12</customer_name>
+    <subject>2FA not working</subject>
+    <description>Two-factor authentication codes are rejected, cannot sign in.</description>
+    <category>account_access</category>
+    <priority>urgent</priority>
+    <status>waiting_customer</status>
+    <tags>
+      <tag>login</tag>
+      <tag>2fa</tag>
+      <tag>password</tag>
+    </tags>
+    <metadata>
+      <source>api</source>
+      <browser>Safari</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3013</customer_id>
+    <customer_email>xmluser13@example.com</customer_email>
+    <customer_name>XML User 13</customer_name>
+    <subject>Timeout on upload</subject>
+    <description>Upload fails with exception, request timeout after 30 seconds.</description>
+    <category>technical_issue</category>
+    <priority>high</priority>
+    <status>resolved</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>chat</source>
+      <browser>Safari</browser>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3014</customer_id>
+    <customer_email>xmluser14@example.com</customer_email>
+    <customer_name>XML User 14</customer_name>
+    <subject>Subscription renewal</subject>
+    <description>Was charged for subscription but card declined notice received.</description>
+    <category>billing_question</category>
+    <priority>medium</priority>
+    <status>closed</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>phone</source>
+      <browser>Safari</browser>
+      <device_type>tablet</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3015</customer_id>
+    <customer_email>xmluser15@example.com</customer_email>
+    <customer_name>XML User 15</customer_name>
+    <subject>Wish list</subject>
+    <description>Wish you could add bulk edit, this enhancement would be nice.</description>
+    <category>feature_request</category>
+    <priority>low</priority>
+    <status>new</status>
+    <tags>
+      <tag>login</tag>
+      <tag>2fa</tag>
+      <tag>password</tag>
+    </tags>
+    <metadata>
+      <source>web_form</source>
+      <browser>Safari</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3016</customer_id>
+    <customer_email>xmluser16@example.com</customer_email>
+    <customer_name>XML User 16</customer_name>
+    <subject>Defect on dashboard</subject>
+    <description>Bug: dashboard shows wrong totals, reproduction steps below.</description>
+    <category>bug_report</category>
+    <priority>urgent</priority>
+    <status>in_progress</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>email</source>
+      <browser>Safari</browser>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3017</customer_id>
+    <customer_email>xmluser17@example.com</customer_email>
+    <customer_name>XML User 17</customer_name>
+    <subject>Quick note</subject>
+    <description>Just a quick note to share some general feedback overall.</description>
+    <category>other</category>
+    <priority>high</priority>
+    <status>waiting_customer</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>api</source>
+      <browser>Safari</browser>
+      <device_type>tablet</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3018</customer_id>
+    <customer_email>xmluser18@example.com</customer_email>
+    <customer_name>XML User 18</customer_name>
+    <subject>Cannot login to account</subject>
+    <description>Login fails repeatedly, password reset is broken, locked out completely.</description>
+    <category>account_access</category>
+    <priority>medium</priority>
+    <status>resolved</status>
+    <tags>
+      <tag>login</tag>
+      <tag>2fa</tag>
+      <tag>password</tag>
+    </tags>
+    <metadata>
+      <source>chat</source>
+      <browser>Safari</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3019</customer_id>
+    <customer_email>xmluser19@example.com</customer_email>
+    <customer_name>XML User 19</customer_name>
+    <subject>App crash on save</subject>
+    <description>Application crash, error thrown, save button broken and not working.</description>
+    <category>technical_issue</category>
+    <priority>low</priority>
+    <status>closed</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>phone</source>
+      <browser>Safari</browser>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3020</customer_id>
+    <customer_email>xmluser20@example.com</customer_email>
+    <customer_name>XML User 20</customer_name>
+    <subject>Refund request</subject>
+    <description>Need refund for double charge on last invoice, billing error.</description>
+    <category>billing_question</category>
+    <priority>urgent</priority>
+    <status>new</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>web_form</source>
+      <browser>Safari</browser>
+      <device_type>tablet</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3021</customer_id>
+    <customer_email>xmluser21@example.com</customer_email>
+    <customer_name>XML User 21</customer_name>
+    <subject>Enhancement suggestion</subject>
+    <description>Suggestion: please add CSV export feature, would be great.</description>
+    <category>feature_request</category>
+    <priority>high</priority>
+    <status>in_progress</status>
+    <tags>
+      <tag>login</tag>
+      <tag>2fa</tag>
+      <tag>password</tag>
+    </tags>
+    <metadata>
+      <source>email</source>
+      <browser>Safari</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3022</customer_id>
+    <customer_email>xmluser22@example.com</customer_email>
+    <customer_name>XML User 22</customer_name>
+    <subject>Reproduction steps</subject>
+    <description>Steps to reproduce: 1) login 2) click export — bug, regression.</description>
+    <category>bug_report</category>
+    <priority>medium</priority>
+    <status>waiting_customer</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>api</source>
+      <browser>Safari</browser>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3023</customer_id>
+    <customer_email>xmluser23@example.com</customer_email>
+    <customer_name>XML User 23</customer_name>
+    <subject>Random question</subject>
+    <description>Wondering about something general, not really an issue.</description>
+    <category>other</category>
+    <priority>low</priority>
+    <status>resolved</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>chat</source>
+      <browser>Safari</browser>
+      <device_type>tablet</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3024</customer_id>
+    <customer_email>xmluser24@example.com</customer_email>
+    <customer_name>XML User 24</customer_name>
+    <subject>Sign in issue</subject>
+    <description>Authentication keeps timing out, password reset link never arrives.</description>
+    <category>account_access</category>
+    <priority>urgent</priority>
+    <status>closed</status>
+    <tags>
+      <tag>login</tag>
+      <tag>2fa</tag>
+      <tag>password</tag>
+    </tags>
+    <metadata>
+      <source>phone</source>
+      <browser>Safari</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3025</customer_id>
+    <customer_email>xmluser25@example.com</customer_email>
+    <customer_name>XML User 25</customer_name>
+    <subject>Page not loading</subject>
+    <description>Page broken, nothing loads, error in console</description>
+    <category>technical_issue</category>
+    <priority>high</priority>
+    <status>new</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>web_form</source>
+      <browser>Safari</browser>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3026</customer_id>
+    <customer_email>xmluser26@example.com</customer_email>
+    <customer_name>XML User 26</customer_name>
+    <subject>Invoice missing</subject>
+    <description>Last month invoice never arrived, payment processed though.</description>
+    <category>billing_question</category>
+    <priority>medium</priority>
+    <status>in_progress</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>email</source>
+      <browser>Safari</browser>
+      <device_type>tablet</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3027</customer_id>
+    <customer_email>xmluser27@example.com</customer_email>
+    <customer_name>XML User 27</customer_name>
+    <subject>Please add dark mode</subject>
+    <description>Would be nice to have dark mode, this is a feature request.</description>
+    <category>feature_request</category>
+    <priority>low</priority>
+    <status>waiting_customer</status>
+    <tags>
+      <tag>login</tag>
+      <tag>2fa</tag>
+      <tag>password</tag>
+    </tags>
+    <metadata>
+      <source>api</source>
+      <browser>Safari</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3028</customer_id>
+    <customer_email>xmluser28@example.com</customer_email>
+    <customer_name>XML User 28</customer_name>
+    <subject>Bug in export</subject>
+    <description>Bug found, regression from last release, defect in CSV export.</description>
+    <category>bug_report</category>
+    <priority>urgent</priority>
+    <status>resolved</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>chat</source>
+      <browser>Safari</browser>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>cust3029</customer_id>
+    <customer_email>xmluser29@example.com</customer_email>
+    <customer_name>XML User 29</customer_name>
+    <subject>Saying hi</subject>
+    <description>Just wanted to say hello, nothing specific to report today.</description>
+    <category>other</category>
+    <priority>high</priority>
+    <status>closed</status>
+    <tags>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>phone</source>
+      <browser>Safari</browser>
+      <device_type>tablet</device_type>
+    </metadata>
+  </ticket>
+</tickets>
