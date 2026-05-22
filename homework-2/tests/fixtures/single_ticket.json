@@ -1,0 +1,12 @@
+{
+  "customer_id": "solo1",
+  "customer_email": "solo@example.com",
+  "customer_name": "Solo Customer",
+  "subject": "Single ticket import",
+  "description": "This is a single ticket that should be wrapped into an array.",
+  "category": "other",
+  "priority": "medium",
+  "metadata": {
+    "source": "api"
+  }
+}

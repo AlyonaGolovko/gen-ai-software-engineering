@@ -1,0 +1,51 @@
+customer_id,customer_email,customer_name,subject,description,category,priority,status,assigned_to,tags,metadata.source,metadata.browser,metadata.device_type
+cust1000,user0@example.com,User Number 0,Cannot login to account,"Login fails repeatedly, password reset is broken, locked out completely. (note: includes comma, pipes in tags)",account_access,urgent,new,,login|2fa|password,web_form,Chrome,desktop
+cust1001,user1@example.com,User Number 1,App crash on save,"Application crash, error thrown, save button broken and not working.",technical_issue,high,in_progress,agent-1,billing|invoice,email,Chrome,mobile
+cust1002,user2@example.com,User Number 2,Refund request,"Need refund for double charge on last invoice, billing error.",billing_question,medium,waiting_customer,agent-2,urgent|production,api,Chrome,tablet
+cust1003,user3@example.com,User Number 3,Enhancement suggestion,"Suggestion: please add CSV export feature, would be great.",feature_request,low,resolved,,,chat,Chrome,desktop
+cust1004,user4@example.com,User Number 4,Reproduction steps,"Steps to reproduce: 1) login 2) click export — bug, regression.",bug_report,urgent,closed,agent-4,login|2fa|password,phone,Chrome,mobile
+cust1005,user5@example.com,User Number 5,Random question,"Wondering about something general, not really an issue. (note: includes comma, pipes in tags)",other,high,new,agent-5,billing|invoice,web_form,Chrome,tablet
+cust1006,user6@example.com,User Number 6,Sign in issue,"Authentication keeps timing out, password reset link never arrives.",account_access,medium,in_progress,,urgent|production,email,Chrome,desktop
+cust1007,user7@example.com,User Number 7,Page not loading,"Page broken, nothing loads, error in console",technical_issue,low,waiting_customer,agent-0,,api,Chrome,mobile
+cust1008,user8@example.com,User Number 8,Invoice missing,"Last month invoice never arrived, payment processed though.",billing_question,urgent,resolved,agent-1,login|2fa|password,chat,Chrome,tablet
+cust1009,user9@example.com,User Number 9,Please add dark mode,"Would be nice to have dark mode, this is a feature request.",feature_request,high,closed,,billing|invoice,phone,Chrome,desktop
+cust1010,user10@example.com,User Number 10,Bug in export,"Bug found, regression from last release, defect in CSV export. (note: includes comma, pipes in tags)",bug_report,medium,new,agent-3,urgent|production,web_form,Chrome,mobile
+cust1011,user11@example.com,User Number 11,Saying hi,"Just wanted to say hello, nothing specific to report today.",other,low,in_progress,agent-4,,email,Chrome,tablet
+cust1012,user12@example.com,User Number 12,2FA not working,"Two-factor authentication codes are rejected, cannot sign in.",account_access,urgent,waiting_customer,,login|2fa|password,api,Chrome,desktop
+cust1013,user13@example.com,User Number 13,Timeout on upload,"Upload fails with exception, request timeout after 30 seconds.",technical_issue,high,resolved,agent-6,billing|invoice,chat,Chrome,mobile
+cust1014,user14@example.com,User Number 14,Subscription renewal,Was charged for subscription but card declined notice received.,billing_question,medium,closed,agent-0,urgent|production,phone,Chrome,tablet
+cust1015,user15@example.com,User Number 15,Wish list,"Wish you could add bulk edit, this enhancement would be nice. (note: includes comma, pipes in tags)",feature_request,low,new,,,web_form,Chrome,desktop
+cust1016,user16@example.com,User Number 16,Defect on dashboard,"Bug: dashboard shows wrong totals, reproduction steps below.",bug_report,urgent,in_progress,agent-2,login|2fa|password,email,Chrome,mobile
+cust1017,user17@example.com,User Number 17,Quick note,Just a quick note to share some general feedback overall.,other,high,waiting_customer,agent-3,billing|invoice,api,Chrome,tablet
+cust1018,user18@example.com,User Number 18,Cannot login to account,"Login fails repeatedly, password reset is broken, locked out completely.",account_access,medium,resolved,,urgent|production,chat,Chrome,desktop
+cust1019,user19@example.com,User Number 19,App crash on save,"Application crash, error thrown, save button broken and not working.",technical_issue,low,closed,agent-5,,phone,Chrome,mobile
+cust1020,user20@example.com,User Number 20,Refund request,"Need refund for double charge on last invoice, billing error. (note: includes comma, pipes in tags)",billing_question,urgent,new,agent-6,login|2fa|password,web_form,Chrome,tablet
+cust1021,user21@example.com,User Number 21,Enhancement suggestion,"Suggestion: please add CSV export feature, would be great.",feature_request,high,in_progress,,billing|invoice,email,Chrome,desktop
+cust1022,user22@example.com,User Number 22,Reproduction steps,"Steps to reproduce: 1) login 2) click export — bug, regression.",bug_report,medium,waiting_customer,agent-1,urgent|production,api,Chrome,mobile
+cust1023,user23@example.com,User Number 23,Random question,"Wondering about something general, not really an issue.",other,low,resolved,agent-2,,chat,Chrome,tablet
+cust1024,user24@example.com,User Number 24,Sign in issue,"Authentication keeps timing out, password reset link never arrives.",account_access,urgent,closed,,login|2fa|password,phone,Chrome,desktop
+cust1025,user25@example.com,User Number 25,Page not loading,"Page broken, nothing loads, error in console (note: includes comma, pipes in tags)",technical_issue,high,new,agent-4,billing|invoice,web_form,Chrome,mobile
+cust1026,user26@example.com,User Number 26,Invoice missing,"Last month invoice never arrived, payment processed though.",billing_question,medium,in_progress,agent-5,urgent|production,email,Chrome,tablet
+cust1027,user27@example.com,User Number 27,Please add dark mode,"Would be nice to have dark mode, this is a feature request.",feature_request,low,waiting_customer,,,api,Chrome,desktop
+cust1028,user28@example.com,User Number 28,Bug in export,"Bug found, regression from last release, defect in CSV export.",bug_report,urgent,resolved,agent-0,login|2fa|password,chat,Chrome,mobile
+cust1029,user29@example.com,User Number 29,Saying hi,"Just wanted to say hello, nothing specific to report today.",other,high,closed,agent-1,billing|invoice,phone,Chrome,tablet
+cust1030,user30@example.com,User Number 30,2FA not working,"Two-factor authentication codes are rejected, cannot sign in. (note: includes comma, pipes in tags)",account_access,medium,new,,urgent|production,web_form,Chrome,desktop
+cust1031,user31@example.com,User Number 31,Timeout on upload,"Upload fails with exception, request timeout after 30 seconds.",technical_issue,low,in_progress,agent-3,,email,Chrome,mobile
+cust1032,user32@example.com,User Number 32,Subscription renewal,Was charged for subscription but card declined notice received.,billing_question,urgent,waiting_customer,agent-4,login|2fa|password,api,Chrome,tablet
+cust1033,user33@example.com,User Number 33,Wish list,"Wish you could add bulk edit, this enhancement would be nice.",feature_request,high,resolved,,billing|invoice,chat,Chrome,desktop
+cust1034,user34@example.com,User Number 34,Defect on dashboard,"Bug: dashboard shows wrong totals, reproduction steps below.",bug_report,medium,closed,agent-6,urgent|production,phone,Chrome,mobile
+cust1035,user35@example.com,User Number 35,Quick note,"Just a quick note to share some general feedback overall. (note: includes comma, pipes in tags)",other,low,new,agent-0,,web_form,Chrome,tablet
+cust1036,user36@example.com,User Number 36,Cannot login to account,"Login fails repeatedly, password reset is broken, locked out completely.",account_access,urgent,in_progress,,login|2fa|password,email,Chrome,desktop
+cust1037,user37@example.com,User Number 37,App crash on save,"Application crash, error thrown, save button broken and not working.",technical_issue,high,waiting_customer,agent-2,billing|invoice,api,Chrome,mobile
+cust1038,user38@example.com,User Number 38,Refund request,"Need refund for double charge on last invoice, billing error.",billing_question,medium,resolved,agent-3,urgent|production,chat,Chrome,tablet
+cust1039,user39@example.com,User Number 39,Enhancement suggestion,"Suggestion: please add CSV export feature, would be great.",feature_request,low,closed,,,phone,Chrome,desktop
+cust1040,user40@example.com,User Number 40,Reproduction steps,"Steps to reproduce: 1) login 2) click export — bug, regression. (note: includes comma, pipes in tags)",bug_report,urgent,new,agent-5,login|2fa|password,web_form,Chrome,mobile
+cust1041,user41@example.com,User Number 41,Random question,"Wondering about something general, not really an issue.",other,high,in_progress,agent-6,billing|invoice,email,Chrome,tablet
+cust1042,user42@example.com,User Number 42,Sign in issue,"Authentication keeps timing out, password reset link never arrives.",account_access,medium,waiting_customer,,urgent|production,api,Chrome,desktop
+cust1043,user43@example.com,User Number 43,Page not loading,"Page broken, nothing loads, error in console",technical_issue,low,resolved,agent-1,,chat,Chrome,mobile
+cust1044,user44@example.com,User Number 44,Invoice missing,"Last month invoice never arrived, payment processed though.",billing_question,urgent,closed,agent-2,login|2fa|password,phone,Chrome,tablet
+cust1045,user45@example.com,User Number 45,Please add dark mode,"Would be nice to have dark mode, this is a feature request. (note: includes comma, pipes in tags)",feature_request,high,new,,billing|invoice,web_form,Chrome,desktop
+cust1046,user46@example.com,User Number 46,Bug in export,"Bug found, regression from last release, defect in CSV export.",bug_report,medium,in_progress,agent-4,urgent|production,email,Chrome,mobile
+cust1047,user47@example.com,User Number 47,Saying hi,"Just wanted to say hello, nothing specific to report today.",other,low,waiting_customer,agent-5,,api,Chrome,tablet
+cust1048,user48@example.com,User Number 48,2FA not working,"Two-factor authentication codes are rejected, cannot sign in.",account_access,urgent,resolved,,login|2fa|password,chat,Chrome,desktop
+cust1049,user49@example.com,User Number 49,Timeout on upload,"Upload fails with exception, request timeout after 30 seconds.",technical_issue,high,closed,agent-0,billing|invoice,phone,Chrome,mobile
