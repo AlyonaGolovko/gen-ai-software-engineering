@@ -1,0 +1,23 @@
+[
+  {
+    "fromAccount": "ACC-12345",
+    "toAccount": "ACC-67890",
+    "amount": 100.50,
+    "currency": "USD",
+    "type": "transfer"
+  },
+  {
+    "fromAccount": "ACC-67890",
+    "toAccount": "ACC-12345",
+    "amount": 50.00,
+    "currency": "EUR",
+    "type": "transfer"
+  },
+  {
+    "fromAccount": "ACC-11111",
+    "toAccount": "ACC-22222",
+    "amount": 25.00,
+    "currency": "GBP",
+    "type": "deposit"
+  }
+]
