@@ -8,28 +8,45 @@
 
 ## Mid-Level Objectives
 
-- Implement a card state machine that enforces `active ↔ frozen` transitions, rejects transitions from terminal states (`closed`, `expired`, `lost`, `stolen`), and tracks initiator (`cardholder` vs `ops`) so an ops-frozen card cannot be unfrozen by the cardholder.
-- Expose authenticated cardholder endpoints for freeze (step-up auth required) and unfreeze (step-up not required) that are idempotent on repeat calls and return a retryable error on processor failure.
-- Expose ops endpoints (elevated role) for force-freeze and lift-force-freeze that require a controlled-vocabulary reason code (`suspected_fraud`, `aml_review`, `customer_request_phone`, `chargeback_investigation`, `other`).
-- Synchronously propagate every state change to the card processor before user-visible completion; fail closed on timeout; reconcile divergence via a background job.
-- Write an immutable, tamper-evident audit record (7-year retention) for every state change before user-visible completion; PAN must never appear in any audit record, log, event, or notification.
-- Deliver push + email notifications to the cardholder on every state change; failures do not roll back state but are logged and retried; ops-initiated freezes show a generic message to the cardholder (reason codes stay internal).
-- Meet NFRs: freeze API p95 < 300ms, processor ack p99 < 2s, 99.95% monthly availability for the freeze endpoint.
+Each objective is testable and traces to the ticket's Acceptance Criteria (AC) or Non-Functional Requirements (NFR) sections.
+
+- **MLO-1 (State machine):** State machine rejects 100% of attempted transitions out of `closed`, `expired`, `lost`, `stolen`, and rejects 100% of cardholder unfreeze requests where `last_freeze_initiator='ops'`. Traces to AC: "Cardholder cannot unfreeze a card that was force-frozen by ops"; Edge cases: terminal-state freeze, cardholder unfreeze on ops-frozen card.
+- **MLO-2 (Cardholder endpoints):** `POST /v1/cards/{id}/freeze` and `/unfreeze` accept authenticated cardholder requests; freeze additionally requires a step-up token issued within the last 5 minutes; repeat calls with the same `Idempotency-Key` return the original response byte-for-byte. Traces to AC: cardholder freeze/unfreeze, idempotent repeat-freeze.
+- **MLO-3 (Ops endpoints):** Ops endpoints require role `card_ops` and reject any request whose `reason_code` is not in `{suspected_fraud, aml_review, customer_request_phone, chargeback_investigation, other}`. Traces to AC: "Ops user with the correct role can force-freeze any card with a mandatory reason code".
+- **MLO-4 (Processor propagation):** No local state change is committed unless the processor returns success within 2s; on failure the API returns a retryable 5xx and no local divergence is introduced. Traces to AC: "A freeze that fails to propagate to the processor returns a retryable error and leaves no divergent state".
+- **MLO-5 (Audit):** Every state change writes one audit row before the API responds; audit-write failure fails the API call; audit rows are append-only with 7-year retention; no PAN appears in any audit row. Traces to AC: "Every state change is durably recorded in the audit log before user-visible confirmation"; "PAN does not appear in any log, audit record, event, or notification".
+- **MLO-6 (Notifications):** Cardholder receives push + email on every state change; notification failure never rolls back state; ops-initiated freezes use the generic cardholder template (no reason code, no operator identity). Traces to AC: "Cardholder receives a push + email notification for every state change on their card".
+- **MLO-7 (Latency — freeze p95):** `POST /v1/cards/{id}/freeze` p95 latency ≤ 300ms, measured at the load balancer over a rolling 5-minute window at ≥ 100 RPS sustained load. Traces to NFR §Latency.
+- **MLO-8 (Latency — processor p99):** Processor acknowledgment latency p99 ≤ 2s, measured from outbound request emission to ack receipt at the processor client. Traces to NFR §Latency.
+- **MLO-9 (Availability):** 99.95% monthly availability for `POST /v1/cards/{id}/freeze`, measured as `(2xx + idempotent-replay responses) / (total requests − 4xx)` over a calendar month. Traces to NFR §Availability.
+- **MLO-10 (Reconciliation):** A `pending_processor_verification` row is auto-resolved by the reconciler within 15 minutes when processor state matches the intended target; unexplained divergence (any other mismatch) pages on-call within 5 minutes of detection. Traces to NFR §Observability and to the processor-propagation/audit-failure edge cases.
 
 ## Implementation Notes
 
 - Data privacy: PCI-DSS scope — PAN never logged, audited, emitted to events, or rendered in notifications. Use the processor's tokenized card identifier everywhere outside the card vault.
 - Compliance: SOX/SOC2 — ops actions logged separately from cardholder actions; audit storage append-only and tamper-evident (e.g., WORM or hash-chained log); 7-year retention.
 - Auth: cardholder freeze requires step-up (re-auth / biometric / OTP) verified via the existing identity service; ops endpoints require the `card_ops` elevated role asserted in the JWT/session.
-- Idempotency: clients send an `Idempotency-Key` header; repeat freeze on an already-frozen card returns 200 with no side effects. Persist idempotency keys for at least 24h.
-- Concurrency: serialize state transitions per card via a row-level lock or distributed lock keyed on tokenized card id; resolve concurrent ops force-freezes by first-writer-wins, log subsequent attempts.
-- Processor integration: synchronous call with a hard timeout (≤ 2s). On timeout or non-success, do not commit the state change locally; surface a retryable 5xx to the caller. A reconciliation job (every 5 min) compares local card state with processor state and emits alerts on divergence.
+- Concurrency (MLO-1, MLO-3): serialize state transitions per card via a Postgres advisory lock keyed on `hashtext(tokenized_card_id)`, acquired with `pg_try_advisory_xact_lock`. Acquisition timeout 500ms; on timeout return HTTP 503 with error code `concurrent_request_in_progress` (retryable). Concurrent ops force-freezes resolve as first-writer-wins; losing writers observe the new state inside the lock and return 200 `unchanged: true`, and still write an audit row of type `force_freeze_attempt_noop` recording the attempted action.
+- Idempotency (MLO-2): clients send `Idempotency-Key`; scope is `(card_id, key)` with 24h TTL persisted in a dedicated `idempotency_responses` table. (a) Reuse with the same canonical request body returns the original response byte-for-byte (status, body, error code). (b) Reuse with a different body returns HTTP 422 `idempotency_key_conflict`. (c) Keys are not invalidated by subsequent state changes — a replay after the card has moved on still returns the original cached response, never the current state. The cached response is what the client gets even if the underlying card has since been frozen and unfrozen.
+- Processor integration (MLO-4, MLO-10): synchronous call with a 2s hard timeout. On success: commit local state + audit in the same DB transaction. On 4xx from processor: do not commit, return 4xx to caller. On 5xx, transport error, or timeout: roll back the local transaction AND write a `pending_processor_verification` row in a separate autocommit transaction containing `(tokenized_card_id, intended_target_state, initiator, request_id, created_at)`; return HTTP 503 `processor_unavailable` (retryable) to the caller. The reconciler is the sole mechanism that closes these rows — see MLO-10.
 - Audit: write audit record before responding to the user; if audit write fails, fail the state change. Audit fields: tokenized card identifier, previous state, new state, initiator type, initiator identity, reason code (nullable for cardholder), timestamp (UTC, ISO-8601), originating system, request id.
 - Notifications: enqueue push + email via the existing notification service after state commit; retry with exponential backoff; do not block the API response on delivery. Ops-initiated freezes use a generic cardholder-facing template ("Your card has been temporarily frozen. Please contact support.").
 - Observability: emit metrics for action latency, success rate, processor ack latency, notification delivery rate; alert on elevated failure rate or processor-divergence count > 0.
 - Error handling: typed errors for `terminal_state`, `cardholder_cannot_unfreeze_ops_freeze`, `processor_unavailable`, `processor_timeout`, `step_up_required`, `forbidden`, `audit_write_failed`. Map to HTTP 4xx/5xx with stable error codes for clients.
 - Use decimal-safe types only where money appears (not in this feature directly, but maintain repo convention).
 - Testing: unit tests for state machine and authorization rules; integration tests against a processor sandbox; contract tests for the notification and audit clients; load test the freeze endpoint to validate p95/p99.
+
+### Edge case resolutions (defined behavior, not open questions)
+
+Each row defines: trigger → expected post-state → user response → audit rows → notifications. Tests in Task 8 assert these exactly.
+
+- **In-flight authorization at processor when freeze arrives:** out of scope for this feature. The freeze takes effect for *subsequent* authorization requests only; the in-flight auth completes per processor policy. Cardholder confirmation copy must say "no further transactions will be approved" — *further* is load-bearing wording. (MLO-4)
+- **Audit write fails after processor has already acknowledged the freeze:** issue a compensating `unfreezeCard` to the processor. If compensation succeeds: return HTTP 5xx `audit_write_failed`, no local state change, no notification. If compensation also fails: write a `pending_processor_verification` row with `intended_target_state=previous_state`, return HTTP 5xx `audit_write_failed`, no notification — the reconciler closes the loop. (MLO-5, MLO-10)
+- **Card expires while in `frozen` state:** nightly expiry job transitions `frozen → expired` with `initiator=system`, writes one audit row of type `system_expiry`, sends no cardholder notification (expiry is communicated through the separate expiry-reminder channel and is out of scope here).
+- **Notification provider down during any state change:** state change commits successfully; the notification dispatch enqueues to the notification service's durable queue and that service handles retry. If the queue itself is unavailable, log `notification_enqueue_failed` and emit a metric — do not roll back state. (MLO-6)
+- **Rapid freeze-then-unfreeze before first processor ack:** the first request holds the per-card lock until it completes (success or rolled back). The second request blocks on the lock for up to 500ms, then either proceeds against the post-first-request state or returns 503 `concurrent_request_in_progress`.
+- **Concurrent ops force-freezes:** first writer wins (already-frozen card just records `force_freeze_attempt_noop`); the cardholder receives exactly one generic notification (from the first winning write), not one per attempt.
+- **Recurring/subscription merchant authorization on a frozen card:** processor declines per its own policy; this system does not need to do anything special. Out of scope for testing in this codebase.
 
 ## Context
 
@@ -187,7 +204,17 @@ What function do you want to CREATE or UPDATE?
 Pytest test functions covering each acceptance criterion and edge case.
 
 What are details you want to add to drive the code changes?
-- Acceptance-criteria coverage, one test per bullet from the ticket's Acceptance Criteria section.
-- Edge cases (one test each): freeze during in-flight authorization; cardholder unfreeze on ops-frozen card; concurrent app + ops requests; transition from terminal state; recurring merchant auth on frozen card; processor unreachable; audit write failure after processor ack; notification provider down on ops freeze; rapid freeze-then-unfreeze before first ack; concurrent ops force-freezes; expiry while frozen.
-- Security tests: PAN never appears in any captured log, audit row, event, or notification payload (assert by scanning all sinks for the PAN string in fixtures).
-- Load test: 500 RPS sustained on `freeze` against a processor sandbox; assert p95 < 300ms, p99 processor ack < 2s, error rate < 0.05%.
+- **Acceptance-criteria coverage** (one test per AC bullet, each tagged with the AC text it covers, traced to MLO-1 through MLO-6).
+- **Edge case tests** — assert the *exact* behavior defined in the "Edge case resolutions" subsection of Functional Requirements. One test per row:
+  - In-flight auth + concurrent freeze: assert response copy contains "no further transactions" and that the system does not attempt to cancel the in-flight auth.
+  - Audit write fails after processor ack — compensation succeeds: assert processor received `unfreezeCard`, no local state change, no notification, 5xx `audit_write_failed`.
+  - Audit write fails after processor ack — compensation also fails: assert `pending_processor_verification` row exists with `intended_target_state=previous_state`, 5xx `audit_write_failed`.
+  - Expiry while frozen: assert nightly job emits exactly one `system_expiry` audit row and zero notifications.
+  - Notification queue unavailable: assert state still commits, `notification_enqueue_failed` metric emitted, no rollback.
+  - Rapid freeze-then-unfreeze: assert second request either sees post-first state or gets 503 `concurrent_request_in_progress` within 500ms.
+  - Concurrent ops force-freezes: assert exactly one notification dispatched and N-1 `force_freeze_attempt_noop` audit rows for N concurrent attempts.
+  - Idempotency replay with same body: assert byte-for-byte identical response.
+  - Idempotency replay with different body: assert 422 `idempotency_key_conflict`.
+  - Idempotency replay after state moved on: assert original cached response returned, not current state.
+- **Security tests** (MLO-5): PAN never appears in any captured log, audit row, event, or notification payload — assert by scanning all sinks for the literal PAN string seeded in fixtures.
+- **Load test** (MLO-7, MLO-8, MLO-9): 500 RPS sustained for 10 minutes on `freeze` against a processor sandbox; assert p95 < 300ms (MLO-7), p99 processor ack < 2s (MLO-8), success rate ≥ 99.95% measured per MLO-9 formula.
