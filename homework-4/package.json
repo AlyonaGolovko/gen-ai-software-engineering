@@ -1,0 +1,11 @@
+{
+  "name": "homework-4-pipeline",
+  "version": "1.0.0",
+  "description": "Sample mini application operated on by the 4-agent bug-fixing pipeline",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test",
+    "pipeline": "bash run-pipeline.sh"
+  }
+}
