@@ -5,6 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node src/index.js",
-    "test": "node --test"
+    "test": "node --test",
+    "pipeline": "bash run-pipeline.sh"
   }
 }
