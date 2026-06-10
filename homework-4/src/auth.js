@@ -8,7 +8,7 @@ const API_KEY = "PLACEHOLDER_FAKE_SECRET_FOR_HOMEWORK";
  * @returns {boolean}
  */
 function verifyToken(token) {
-  return token == API_KEY;
+  return token === API_KEY;
 }
 
 /**
@@ -20,4 +20,4 @@ function findUser(name, users) {
   return users.find((u) => u.name === name);
 }
 
-module.exports = { verifyToken, findUser, API_KEY };
+module.exports = { verifyToken, findUser };

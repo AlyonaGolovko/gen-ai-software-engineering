@@ -15,7 +15,7 @@ const COUPONS = {
  */
 function applyCoupon(price, code) {
   const percent = COUPONS[code] || 0;
-  const discount = price * percent;
+  const discount = price * (percent / 100);
   return price - discount;
 }
 
@@ -26,7 +26,7 @@ function applyCoupon(price, code) {
  */
 function cartTotal(items) {
   let total = 0;
-  for (let i = 0; i < items.length - 1; i++) {
+  for (let i = 0; i < items.length; i++) {
     total += items[i].price;
   }
   return total;
