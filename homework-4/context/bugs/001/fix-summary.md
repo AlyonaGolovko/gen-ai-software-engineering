@@ -86,7 +86,7 @@ module.exports = { verifyToken, findUser };
 
 ## 3. Manual Verification
 
-Run these commands from `/Users/alyonagolovko/Alyona/study/ai-assisted-dev-homework/homework-4`:
+Run these commands from the `homework-4` directory:
 
 ```bash
 # Run the test suite

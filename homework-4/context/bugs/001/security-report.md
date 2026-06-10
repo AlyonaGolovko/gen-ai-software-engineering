@@ -122,6 +122,6 @@ place per the plan.
 
 Files reviewed:
 
-- `/Users/alyonagolovko/Alyona/study/ai-assisted-dev-homework/homework-4/context/bugs/001/fix-summary.md`
-- `/Users/alyonagolovko/Alyona/study/ai-assisted-dev-homework/homework-4/src/auth.js`
-- `/Users/alyonagolovko/Alyona/study/ai-assisted-dev-homework/homework-4/src/store.js`
+- `context/bugs/001/fix-summary.md`
+- `src/auth.js`
+- `src/store.js`
