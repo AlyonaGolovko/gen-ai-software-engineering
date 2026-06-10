@@ -1,0 +1,16 @@
+{
+  "name": "banking-transactions-api",
+  "version": "1.0.0",
+  "description": "Banking Transactions REST API — Homework 1",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "currency-codes": "^2.2.0",
+    "express": "^4.21.0",
+    "express-rate-limit": "^8.4.1",
+    "uuid": "^10.0.0"
+  }
+}

@@ -1,0 +1,389 @@
+[
+  {
+    "customer_id": "cust2000",
+    "customer_email": "jsonuser0@example.com",
+    "customer_name": "JSON User 0",
+    "subject": "Cannot login to account",
+    "description": "Login fails repeatedly, password reset is broken, locked out completely.",
+    "category": "account_access",
+    "priority": "urgent",
+    "status": "new",
+    "assigned_to": null,
+    "tags": [
+      "login",
+      "2fa"
+    ],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Firefox",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "cust2001",
+    "customer_email": "jsonuser1@example.com",
+    "customer_name": "JSON User 1",
+    "subject": "App crash on save",
+    "description": "Application crash, error thrown, save button broken and not working.",
+    "category": "technical_issue",
+    "priority": "high",
+    "status": "in_progress",
+    "assigned_to": "agent-1",
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "email",
+      "browser": "Firefox",
+      "device_type": "mobile"
+    }
+  },
+  {
+    "customer_id": "cust2002",
+    "customer_email": "jsonuser2@example.com",
+    "customer_name": "JSON User 2",
+    "subject": "Refund request",
+    "description": "Need refund for double charge on last invoice, billing error.",
+    "category": "billing_question",
+    "priority": "medium",
+    "status": "waiting_customer",
+    "assigned_to": null,
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "api",
+      "browser": "Firefox",
+      "device_type": "tablet"
+    }
+  },
+  {
+    "customer_id": "cust2003",
+    "customer_email": "jsonuser3@example.com",
+    "customer_name": "JSON User 3",
+    "subject": "Enhancement suggestion",
+    "description": "Suggestion: please add CSV export feature, would be great.",
+    "category": "feature_request",
+    "priority": "low",
+    "status": "resolved",
+    "assigned_to": "agent-3",
+    "tags": [
+      "login",
+      "2fa"
+    ],
+    "metadata": {
+      "source": "chat",
+      "browser": "Firefox",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "cust2004",
+    "customer_email": "jsonuser4@example.com",
+    "customer_name": "JSON User 4",
+    "subject": "Reproduction steps",
+    "description": "Steps to reproduce: 1) login 2) click export — bug, regression.",
+    "category": "bug_report",
+    "priority": "urgent",
+    "status": "closed",
+    "assigned_to": null,
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "phone",
+      "browser": "Firefox",
+      "device_type": "mobile"
+    }
+  },
+  {
+    "customer_id": "cust2005",
+    "customer_email": "jsonuser5@example.com",
+    "customer_name": "JSON User 5",
+    "subject": "Random question",
+    "description": "Wondering about something general, not really an issue.",
+    "category": "other",
+    "priority": "high",
+    "status": "new",
+    "assigned_to": "agent-0",
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Firefox",
+      "device_type": "tablet"
+    }
+  },
+  {
+    "customer_id": "cust2006",
+    "customer_email": "jsonuser6@example.com",
+    "customer_name": "JSON User 6",
+    "subject": "Sign in issue",
+    "description": "Authentication keeps timing out, password reset link never arrives.",
+    "category": "account_access",
+    "priority": "medium",
+    "status": "in_progress",
+    "assigned_to": null,
+    "tags": [
+      "login",
+      "2fa"
+    ],
+    "metadata": {
+      "source": "email",
+      "browser": "Firefox",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "cust2007",
+    "customer_email": "jsonuser7@example.com",
+    "customer_name": "JSON User 7",
+    "subject": "Page not loading",
+    "description": "Page broken, nothing loads, error in console",
+    "category": "technical_issue",
+    "priority": "low",
+    "status": "waiting_customer",
+    "assigned_to": "agent-2",
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "api",
+      "browser": "Firefox",
+      "device_type": "mobile"
+    }
+  },
+  {
+    "customer_id": "cust2008",
+    "customer_email": "jsonuser8@example.com",
+    "customer_name": "JSON User 8",
+    "subject": "Invoice missing",
+    "description": "Last month invoice never arrived, payment processed though.",
+    "category": "billing_question",
+    "priority": "urgent",
+    "status": "resolved",
+    "assigned_to": null,
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "chat",
+      "browser": "Firefox",
+      "device_type": "tablet"
+    }
+  },
+  {
+    "customer_id": "cust2009",
+    "customer_email": "jsonuser9@example.com",
+    "customer_name": "JSON User 9",
+    "subject": "Please add dark mode",
+    "description": "Would be nice to have dark mode, this is a feature request.",
+    "category": "feature_request",
+    "priority": "high",
+    "status": "closed",
+    "assigned_to": "agent-4",
+    "tags": [
+      "login",
+      "2fa"
+    ],
+    "metadata": {
+      "source": "phone",
+      "browser": "Firefox",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "cust2010",
+    "customer_email": "jsonuser10@example.com",
+    "customer_name": "JSON User 10",
+    "subject": "Bug in export",
+    "description": "Bug found, regression from last release, defect in CSV export.",
+    "category": "bug_report",
+    "priority": "medium",
+    "status": "new",
+    "assigned_to": null,
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Firefox",
+      "device_type": "mobile"
+    }
+  },
+  {
+    "customer_id": "cust2011",
+    "customer_email": "jsonuser11@example.com",
+    "customer_name": "JSON User 11",
+    "subject": "Saying hi",
+    "description": "Just wanted to say hello, nothing specific to report today.",
+    "category": "other",
+    "priority": "low",
+    "status": "in_progress",
+    "assigned_to": "agent-1",
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "email",
+      "browser": "Firefox",
+      "device_type": "tablet"
+    }
+  },
+  {
+    "customer_id": "cust2012",
+    "customer_email": "jsonuser12@example.com",
+    "customer_name": "JSON User 12",
+    "subject": "2FA not working",
+    "description": "Two-factor authentication codes are rejected, cannot sign in.",
+    "category": "account_access",
+    "priority": "urgent",
+    "status": "waiting_customer",
+    "assigned_to": null,
+    "tags": [
+      "login",
+      "2fa"
+    ],
+    "metadata": {
+      "source": "api",
+      "browser": "Firefox",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "cust2013",
+    "customer_email": "jsonuser13@example.com",
+    "customer_name": "JSON User 13",
+    "subject": "Timeout on upload",
+    "description": "Upload fails with exception, request timeout after 30 seconds.",
+    "category": "technical_issue",
+    "priority": "high",
+    "status": "resolved",
+    "assigned_to": "agent-3",
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "chat",
+      "browser": "Firefox",
+      "device_type": "mobile"
+    }
+  },
+  {
+    "customer_id": "cust2014",
+    "customer_email": "jsonuser14@example.com",
+    "customer_name": "JSON User 14",
+    "subject": "Subscription renewal",
+    "description": "Was charged for subscription but card declined notice received.",
+    "category": "billing_question",
+    "priority": "medium",
+    "status": "closed",
+    "assigned_to": null,
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "phone",
+      "browser": "Firefox",
+      "device_type": "tablet"
+    }
+  },
+  {
+    "customer_id": "cust2015",
+    "customer_email": "jsonuser15@example.com",
+    "customer_name": "JSON User 15",
+    "subject": "Wish list",
+    "description": "Wish you could add bulk edit, this enhancement would be nice.",
+    "category": "feature_request",
+    "priority": "low",
+    "status": "new",
+    "assigned_to": "agent-0",
+    "tags": [
+      "login",
+      "2fa"
+    ],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Firefox",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "cust2016",
+    "customer_email": "jsonuser16@example.com",
+    "customer_name": "JSON User 16",
+    "subject": "Defect on dashboard",
+    "description": "Bug: dashboard shows wrong totals, reproduction steps below.",
+    "category": "bug_report",
+    "priority": "urgent",
+    "status": "in_progress",
+    "assigned_to": null,
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "email",
+      "browser": "Firefox",
+      "device_type": "mobile"
+    }
+  },
+  {
+    "customer_id": "cust2017",
+    "customer_email": "jsonuser17@example.com",
+    "customer_name": "JSON User 17",
+    "subject": "Quick note",
+    "description": "Just a quick note to share some general feedback overall.",
+    "category": "other",
+    "priority": "high",
+    "status": "waiting_customer",
+    "assigned_to": "agent-2",
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "api",
+      "browser": "Firefox",
+      "device_type": "tablet"
+    }
+  },
+  {
+    "customer_id": "cust2018",
+    "customer_email": "jsonuser18@example.com",
+    "customer_name": "JSON User 18",
+    "subject": "Cannot login to account",
+    "description": "Login fails repeatedly, password reset is broken, locked out completely.",
+    "category": "account_access",
+    "priority": "medium",
+    "status": "resolved",
+    "assigned_to": null,
+    "tags": [
+      "login",
+      "2fa"
+    ],
+    "metadata": {
+      "source": "chat",
+      "browser": "Firefox",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "cust2019",
+    "customer_email": "jsonuser19@example.com",
+    "customer_name": "JSON User 19",
+    "subject": "App crash on save",
+    "description": "Application crash, error thrown, save button broken and not working.",
+    "category": "technical_issue",
+    "priority": "low",
+    "status": "closed",
+    "assigned_to": "agent-4",
+    "tags": [
+      "billing"
+    ],
+    "metadata": {
+      "source": "phone",
+      "browser": "Firefox",
+      "device_type": "mobile"
+    }
+  }
+]
